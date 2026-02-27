@@ -5,7 +5,21 @@
 #
 
 def bubbleSort(A):
-    ... 
+    n = len(A)
+    # Goes thorugh every arraty element
+    for i in range(n):
+        # Sort by i element in last place
+        moved = False
+        for j in range(0, n - i - 1):
+            # Move through array from 0 to end and swap if greater than next]
+            # swapping simulaineously
+            if A[j] > A[j+1]:
+                A[j], A[j+1] = A[j+1], A[j]
+                moved = True
+        if not moved:
+            break
+    return A
+        
 
 def insertionSort(A):
     ...
