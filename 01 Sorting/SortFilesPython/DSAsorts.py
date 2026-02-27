@@ -48,7 +48,41 @@ def selectionSort(A):
 def mergeSort(A):
     """ mergeSort - front-end for kick-starting the recursive algorithm
     """
-    ...
+    if len(A) > 1:
+        # Devide into 2 sides
+        mid = len(A) // 2
+        left_part = A[:mid]
+        right_part = A[mid:]
+        
+        # Sort each half
+        mergeSort(left_part)
+        mergeSort(right_part)
+        
+        # Merge the two sorted blocks
+        i=0
+        j=0
+        k=0
+        while i < len(left_part) and j < len(right_part):
+            if left_part[i] < right_part[j]:
+                A[k]    = left_part[i]
+                i += 1
+            else:
+                A[k]    = right_part[j]
+                j += 1
+            k += 1
+        
+        #Add remaining elements on left
+        while i < len(left_part):
+            A[k] = left_part[i]
+            i += 1
+            k += 1
+        
+        #Add remaining elements on right
+        while j < len(right_part):
+            A[k] = right_part[j]
+            j += 1
+            k += 1
+    return A
 
 def mergeSortRecurse(A, leftIdx, rightIdx):
     ...
