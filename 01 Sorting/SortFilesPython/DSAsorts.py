@@ -51,35 +51,35 @@ def mergeSort(A):
     if len(A) > 1:
         # Devide into 2 sides
         mid = len(A) // 2
-        left_part = A[:mid]
-        right_part = A[mid:]
+        leftIdx = A[:mid]
+        rightIdx = A[mid:]
         
         # Sort each half
-        mergeSort(left_part)
-        mergeSort(right_part)
+        mergeSort(leftIdx)
+        mergeSort(rightIdx)
         
         # Merge the two sorted blocks
         i=0
         j=0
         k=0
-        while i < len(left_part) and j < len(right_part):
-            if left_part[i] < right_part[j]:
-                A[k]    = left_part[i]
+        while i < len(leftIdx) and j < len(rightIdx):
+            if leftIdx[i] < rightIdx[j]:
+                A[k]    = leftIdx[i]
                 i += 1
             else:
-                A[k]    = right_part[j]
+                A[k]    = rightIdx[j]
                 j += 1
             k += 1
         
         #Add remaining elements on left
-        while i < len(left_part):
-            A[k] = left_part[i]
+        while i < len(leftIdx):
+            A[k] = leftIdx[i]
             i += 1
             k += 1
         
         #Add remaining elements on right
-        while j < len(right_part):
-            A[k] = right_part[j]
+        while j < len(rightIdx):
+            A[k] = rightIdx[j]
             j += 1
             k += 1
     return A
@@ -88,7 +88,30 @@ def mergeSortRecurse(A, leftIdx, rightIdx):
     ...
 
 def merge(A, leftIdx, midIdx, rightIdx):
-    ...
+    # Merge the two sorted blocks
+    i=0
+    j=0
+    k=0
+    while i < len(leftIdx) and j < len(rightIdx):
+        if leftIdx[i] < rightIdx[j]:
+            A[k]    = leftIdx[i]
+            i += 1
+        else:
+            A[k]    = rightIdx[j]
+            j += 1
+            k += 1
+        
+    #Add remaining elements on left
+    while i < len(leftIdx):
+        A[k] = leftIdx[i]
+        i += 1
+        k += 1
+        
+    #Add remaining elements on right
+    while j < len(rightIdx):
+        A[k] = rightIdx[j]
+        j += 1
+        k += 1
 
 def quickSort(A):
     """ quickSort - front-end for kick-starting the recursive algorithm
@@ -99,7 +122,11 @@ def quickSortRecurse(A, leftIdx, rightIdx):
     ...
 
 def doPartitioning(A, leftIdx, rightIdx, pivotIdx):
-    ...
+    # Devide into 2 sides
+    mid = len(A) // 2
+    leftIdx = A[:mid]
+    rightIdx = A[mid:]
+    return
 
 
 if __name__ == '__main__':
