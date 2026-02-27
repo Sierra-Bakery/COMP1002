@@ -11,6 +11,10 @@ def iterative_fibonacci_get_n(n):
         y = x + y #calculates the next number in the sequence
         x = z #updates x to the previous value of y for the next iteration
     return y
-
-print(iterative_fibonacci_get_n(10))
-    
+def recursive_fibonacci_get_n(n):
+    # calculates the nth fibonacci number recursively
+    if n <= 1:
+        return n
+    return recursive_fibonacci_get_n(n-1) + recursive_fibonacci_get_n(n-2) #calls the function recursively to calculate the sum of the two preceding numbers
+print("Iterative: " + str(iterative_fibonacci_get_n(10)))
+print("Recursive: " + str(recursive_fibonacci_get_n(10)))
