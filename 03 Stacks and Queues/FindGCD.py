@@ -8,5 +8,5 @@ def find_gcd(x, y):
 
 num1 = int(input("Enter number 1: "))
 num2 = int(input("Enter number 2:"))
-result = find_gcd(num1, num2)
+result = find_gcd(num1, num2) #calls function 
 print("The greatest common denominator of " + str(num1) + " and " + str(num2) + " is: " + str(result))
