@@ -16,5 +16,16 @@ def recursive_fibonacci_get_n(n):
     if n <= 1:
         return n
     return recursive_fibonacci_get_n(n-1) + recursive_fibonacci_get_n(n-2) #calls the function recursively to calculate the sum of the two preceding numbers
+
+def iterative_factorial_get_n(n):
+    if n < 0: #basic error handling
+        return "factorial does not work with negative numbers"
+    result = 1
+    for i in range(1, n + 1):
+        result = result * i
+    return result
+
+
+
 print("Iterative: " + str(iterative_fibonacci_get_n(10)))
 print("Recursive: " + str(recursive_fibonacci_get_n(10)))
