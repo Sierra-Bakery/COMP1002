@@ -26,6 +26,6 @@ def iterative_factorial_get_n(n):
     return result
 
 
-
+print("Calculating fibonacci sequence starting from one ") #the values starting from 0 and 1 are drastically different so this notifies the user
 print("Iterative: " + str(iterative_fibonacci_get_n(10)))
 print("Recursive: " + str(recursive_fibonacci_get_n(10)))
