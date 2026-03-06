@@ -1,7 +1,7 @@
 #implements the Eucleidian algorithm to find the greatest common divisor (denominator) of two numbers
 #source: khan academy: https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 def find_gcd(x, y):
-    if y == 0: #base case: if y is 0, then the gcd is x
+    if y == 0: #serves as base case, if y = 0, then the gcd is x
         return x
     else:
         return find_gcd(y, x % y)
