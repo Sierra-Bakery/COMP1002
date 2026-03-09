@@ -85,48 +85,80 @@ def mergeSort(A):
     return A
 
 def mergeSortRecurse(A, leftIdx, rightIdx):
-    ...
+    if leftIdx < rightIdx:
+        midIdx = (leftIdx + rightIdx) // 2
+
+        # Recursively sort both halves
+        mergeSortRecurse(A, leftIdx, midIdx)
+        mergeSortRecurse(A, midIdx + 1, rightIdx)
+
+        # Merge them
+        merge(A, leftIdx, midIdx, rightIdx)
 
 def merge(A, leftIdx, midIdx, rightIdx):
-    # Merge the two sorted blocks
-    i=0
-    j=0
-    k=0
-    while i < len(leftIdx) and j < len(rightIdx):
-        if leftIdx[i] < rightIdx[j]:
-            A[k]    = leftIdx[i]
+    # Create temporary arrays
+    left = A[leftIdx:midIdx + 1]
+    right = A[midIdx + 1:rightIdx + 1]
+
+    i = 0
+    j = 0
+    k = leftIdx
+
+    # Merge back into A
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            A[k] = left[i]
             i += 1
         else:
-            A[k]    = rightIdx[j]
+            A[k] = right[j]
             j += 1
-            k += 1
-        
-    #Add remaining elements on left
-    while i < len(leftIdx):
-        A[k] = leftIdx[i]
+        k += 1
+
+    # Remaining elements
+    while i < len(left):
+        A[k] = left[i]
         i += 1
         k += 1
-        
-    #Add remaining elements on right
-    while j < len(rightIdx):
-        A[k] = rightIdx[j]
+
+    while j < len(right):
+        A[k] = right[j]
         j += 1
         k += 1
 
 def quickSort(A):
     """ quickSort - front-end for kick-starting the recursive algorithm
     """
-    ...
+    quickSortRecurse(A, 0, len(A) - 1)
+    return A
 
 def quickSortRecurse(A, leftIdx, rightIdx):
-    ...
+    if leftIdx < rightIdx:
+        pivotIdx = (leftIdx + rightIdx) // 2
+
+        # Partition around pivot
+        pivotNewIdx = doPartitioning(A, leftIdx, rightIdx, pivotIdx)
+
+        # Recursively sort partitions
+        quickSortRecurse(A, leftIdx, pivotNewIdx - 1)
+        quickSortRecurse(A, pivotNewIdx + 1, rightIdx)
 
 def doPartitioning(A, leftIdx, rightIdx, pivotIdx):
-    # Devide into 2 sides
-    mid = len(A) // 2
-    leftIdx = A[:mid]
-    rightIdx = A[mid:]
-    return
+    pivotValue = A[pivotIdx]
+
+    # Move pivot to end
+    A[pivotIdx], A[rightIdx] = A[rightIdx], A[pivotIdx]
+
+    storeIdx = leftIdx
+
+    for i in range(leftIdx, rightIdx):
+        if A[i] < pivotValue:
+            A[i], A[storeIdx] = A[storeIdx], A[i]
+            storeIdx += 1
+
+    # Move pivot to final place
+    A[storeIdx], A[rightIdx] = A[rightIdx], A[storeIdx]
+
+    return storeIdx
 
 
 if __name__ == '__main__':
