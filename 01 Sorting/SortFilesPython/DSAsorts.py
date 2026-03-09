@@ -159,18 +159,3 @@ def doPartitioning(A, leftIdx, rightIdx, pivotIdx):
     A[storeIdx], A[rightIdx] = A[rightIdx], A[storeIdx]
 
     return storeIdx
-
-
-if __name__ == '__main__':
-    A = []
-    A = [1,45,21,23,34,12,23,43,45,12,34,199]
-    print(A)
-    AB = bubbleSort(A)
-    print(AB)
-    A = [1,45,21,23,34,12,23,43,45,12,34,199]
-    AI = insertionSort(A)
-    print(AI)
-    A = [1,45,21,23,34,12,23,43,45,12,34,199]
-    AS = selectionSort(A)
-    print(AS)
-    A = [1,45,21,23,34,12,23,43,45,12,34,199]
