@@ -8,5 +8,10 @@ def dectoBase(a, b):
         return digits[a]
     else: #recursive case
         return dectoBase(a // b, b) + digits[a % b] #calls function recursively, "//" is used to grab the integer rounded off with no decimals
-
-print(dectoBase(100, 16)) #outputs result
+while True:
+    b10decimal = int(input("Enter a base 10 number: "))
+    base = int(input("Enter a base to convert to (2-16): "))
+    try:
+        print(dectoBase(b10decimal, base)) #outputs result
+    except (ValueError):
+        print("Invalid input, please try again.")
