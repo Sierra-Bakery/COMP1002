@@ -24,8 +24,13 @@ def iterative_factorial_get_n(n):
     for i in range(1, n + 1):
         result = result * i
     return result
-
-
-print("Calculating fibonacci sequence starting from one ") #the values starting from 0 and 1 are drastically different so this notifies the user
-print("Iterative: " + str(iterative_fibonacci_get_n(10))) #takes argument for n and executes iteratively
-print("Recursive: " + str(recursive_fibonacci_get_n(10))) #takes argument for n and execcutes recursively
+while True:
+    try:
+        number = int(input("Enter a number to calculate its factorial: "))
+        print("Calculating fibonacci sequence starting from one ") #the values starting from 0 and 1 are drastically different so this notifies the user
+        print("Iterative: " + str(iterative_fibonacci_get_n(number))) #takes argument for n and executes iteratively
+        print("Recursive: " + str(recursive_fibonacci_get_n(number))) #takes argument for n and execcutes recursively
+    except (TypeError, ValueError):
+        print("Error: invalid input, please enter a non-negative integer")
+    except (TypeError):
+        print("Error: invalid input for factorial, please enter a non-negative integer")
