@@ -13,5 +13,7 @@ while True:
     base = int(input("Enter a base to convert to (2-16): "))
     try:
         print(dectoBase(b10decimal, base)) #outputs result
-    except (ValueError):
+    except (ValueError): #catches invalid value
+        print("Invalid input, please try again.")
+    except (TypeError): #catches invalid data type
         print("Invalid input, please try again.")
