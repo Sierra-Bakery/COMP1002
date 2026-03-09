@@ -7,6 +7,6 @@ def dectoBase(a, b):
     if a < b: #base case
         return digits[a]
     else: #recursive case
-        return dectoBase(a // b, b) + digits[a % b]
+        return dectoBase(a // b, b) + digits[a % b] #calls function recursively, "//" is used to grab the integer rounded off with no decimals
 
-print(dectoBase(100, 16))
+print(dectoBase(100, 16)) #outputs result
