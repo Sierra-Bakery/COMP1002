@@ -1,9 +1,12 @@
-def BaseToBase(x, y):
-    print('success')
+# algorithm is from a mathstackexchange thread: https://math.stackexchange.com/questions/4568479/general-formula-for-decimal-x-10-to-base-b-conversion
+# (modified) string digit idea from javathinking article: https://www.javathinking.com/blog/java-convert-decimal-to-base-recursive/. adapted to python and converted to an array for easier manipulation.
 
-b10 = int(input("Please enter a BASE 10 Decimal: "))
-convertor = int(input("Please enter which BASE to convert to: "))
-if convertor > 2 and convertor < 16:
-    BaseToBase(b10,convertor)
-else:
-    print("invalid conversion integer")
+import numpy as np #uses array to store base digits up to 16, in order to comply with prac instructions, as lists are unfortunately not allowed
+def dectoBase(a, b):
+    digits = np.array(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]) #stores the digits for bases up to 16, as a string for easy output
+    if a < b: #base case
+        return digits[a]
+    else: #recursive case
+        return dectoBase(a // b, b) + digits[a % b]
+
+print(dectoBase(100, 16))
