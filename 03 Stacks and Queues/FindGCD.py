@@ -15,4 +15,4 @@ while True: #loops program, can be exited using ctrl c
         print("Please enter an integer.")
     except ValueError: #catches invalid value
         print("Please enter a valid integer.")
-    
+     

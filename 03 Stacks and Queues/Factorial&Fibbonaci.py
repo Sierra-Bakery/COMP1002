@@ -1,3 +1,4 @@
+#Code inspired by the ones present on the lecture slides, modified to implement error handling
 def iterative_fibonacci_get_n(n):
     # calculates the nth fibonacci number iteratively
     if n <= 1:
