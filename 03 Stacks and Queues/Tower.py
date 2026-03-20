@@ -1,7 +1,7 @@
 # the formula for the number of moves is 2^n - 1, where n is the number of disks
 # source: https://www.geeksforgeeks.org/python/python-program-for-tower-of-hanoi/
 # multiple functions are used because it makes things much simpler
-def moveDisk(n, src, dest, level):
+def moveDisk(n, src, dest, level): #function moves the 
     indent = ""
     i = 1
     while i < level:
@@ -11,12 +11,11 @@ def moveDisk(n, src, dest, level):
     print(indent + "Recursion Level=" + str(level)) #prints the current level of recursion
     print(indent + "Moving Disk " + str(n) + " from Source " + str(src) + " to Destination " + str(dest))
     print(indent + "n=" + str(n) + ", src=" + str(src) + ", dest=" + str(dest))
-    print()
 
 def towers(n, src, dest, level): 
     aux = 6 - src - dest
 
-    if n == 1: 
+    if n == 1: #base case, if theres only 1 disk the problem is trivial
         moveDisk(n, src, dest, level)
     else:
         towers(n-1, src, aux, level+1) #moves the top n-1 disks from source to auxiliary becaues you can only remove the top disk

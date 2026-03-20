@@ -3,7 +3,7 @@
 
 import numpy as np #uses array to store base digits up to 16, in order to comply with prac instructions, as lists are unfortunately not allowed
 def dectoBase(a, b):
-    digits = np.array(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]) #stores the digits for bases up to 16, as a string for easy output
+    digits = np.array(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]) #stores the digits for bases up to 16, as a an array for easier manipulation
     if a < b: #base case
         return digits[a]
     else: #recursive case
