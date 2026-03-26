@@ -1,0 +1,25 @@
+
+        At the end, exactly one value remains on the stack — the answer.
+
+        WHY POP ORDER MATTERS
+        
+        The stack is LIFO, so the last-pushed operand comes off first.
+        In an expression like "10 - 3", 10 is pushed first and 3 is
+        pushed second.  When we process '-':
+            op2 = pop()  → 3   (most recently pushed)
+            op1 = pop()  → 10  (pushed before 3)
+            result = op1 - op2 = 10 - 3 = 7   ✓
+
+        Getting this backwards would give 3 - 10 = -7  ✗.
+        The same concern applies to division.
+
+        WORKED EXAMPLE — queue = [3, 4, 2, *, +]
+        
+        Token | Action                      | Operand stack
+        |--|--
+        3     | push 3                      | [3]
+        4     | push 4                      | [3, 4]
+        2     | push 2                      | [3, 4, 2]
+        *     | op2=2, op1=4, push 4*2=8   | [3, 8]
+        +     | op2=8, op1=3, push 3+8=11  | [11]
+        (end) | one item left → answer=11  |

@@ -1,0 +1,64 @@
+
+        THE SHUNTING-YARD ALGORITHM
+        
+        Dijkstra's Shunting-Yard algorithm processes tokens left to right
+        and uses a stack to hold operators that haven't yet been placed in
+        the output.  The rules are:
+
+          TOKEN IS A NUMBER
+              → Enqueue it directly to postfix output.
+
+          TOKEN IS AN OPERATOR  (+ - * /)
+              → Before pushing it onto the operator stack, first pop and
+                enqueue any operators already on the stack that have EQUAL
+                OR HIGHER precedence (* / before + -).  This ensures
+                higher-priority operations appear earlier in the postfix
+                output.
+                NEVER pop a '(' — it marks the boundary of a sub-expression.
+
+          TOKEN IS '('
+              → Push it onto the operator stack.  It acts as a barrier that
+                stops operators belonging to the outer expression from being
+                popped while we process the sub-expression inside.
+
+          TOKEN IS ')'
+              → Pop and enqueue operators until we find the matching '('.
+                Discard the '(' — it does NOT go into the postfix output.
+
+          END OF INPUT
+              → Pop and enqueue any operators remaining on the stack.
+
+        WORKED EXAMPLE — "3 + 4 * 2"
+        -
+        Token  | Action                    | Stack | Postfix queue
+        -||-|--
+        3      | enqueue operand           | []    | [3]
+        +      | push (stack empty)        | [+]   | [3]
+        4      | enqueue operand           | [+]   | [3, 4]
+        *      | * > +, just push          | [+,*] | [3, 4]
+        2      | enqueue operand           | [+,*] | [3, 4, 2]
+        (end)  | pop *, pop +              | []    | [3, 4, 2, *, +]
+
+        Evaluating "3 4 2 * +" → 4*2=8, 3+8=11  ✓
+
+        WORKED EXAMPLE — "( 3 + 4 ) * 2"
+        -
+        Token  | Action                    | Stack   | Postfix queue
+        -|||
+        (      | push '('                  | [(]     | []
+        3      | enqueue operand           | [(]     | [3]
+        +      | push (top is '(', stop)   | [(, +]  | [3]
+        4      | enqueue operand           | [(, +]  | [3, 4]
+        )      | pop until '(': enqueue +  | []      | [3, 4, +]
+        *      | push                      | [*]     | [3, 4, +]
+        2      | enqueue operand           | [*]     | [3, 4, +, 2]
+        (end)  | pop *                     | []      | [3, 4, +, 2, *]
+
+        Evaluating "3 4 + 2 *" → 3+4=7, 7*2=14  ✓
+
+        OUTPUT FORMAT
+        -
+        The returned CircularQueue holds items in postfix order.
+        Each item is either:
+          - a float  (for numeric operands)
+          - a single-character str  (for operators +, -, *, /)
