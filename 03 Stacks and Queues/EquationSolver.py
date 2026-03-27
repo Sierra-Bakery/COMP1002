@@ -3,42 +3,7 @@ from DSAQueue import CircularQueue
 
 
 class EquationSolver:
-    """
-    Solves a mathematical equation given in INFIX notation by:
-      1. Converting it to POSTFIX notation  (also called Reverse Polish Notation)
-      2. Evaluating the postfix expression to get the numeric answer
-
-    THE TWO-STEP PROCESS
-    Step 1 — _parse_infix_to_postfix()
-        Uses the Shunting-Yard algorithm (invented by Edsger Dijkstra).
-        Reads the infix string token by token and reorders tokens into a
-        postfix CircularQueue.  A DSAStack is used to temporarily hold
-        operators while we work out where they belong in postfix order.
-
-    Step 2 — _evaluate_postfix()
-        Reads the postfix queue token by token.
-          - If a token is a NUMBER  →  push it onto an operand stack.
-          - If a token is an OPERATOR  →  pop two numbers from the stack,
-            apply the operation, push the result back.
-        After all tokens are processed, the single remaining stack value
-        is the final answer.
-
-    Example
-        solver = EquationSolver()
-        print(solver.solve("3 + 4 * 2"))          # → 11.0
-        print(solver.solve("( 3 + 4 ) * 2"))      # → 14.0
-        print(solver.solve("10 / 2 - 3"))         # →  2.0
-    """
-
     def solve(self, equation: str) -> float:
-        """
-        Solve *equation* by:
-          1. Convert infix to postfix
-          2. Evaluate the postfix expression
-
-        Parameters
-            equation :str e.g. "( 3 + 4 ) * 2"
-        """
         # Step 1: parse the infix string into a postfix queue of tokens
         postfix_queue = self._parse_infix_to_postfix(equation)
 
@@ -47,21 +12,6 @@ class EquationSolver:
 
     # MANUAL TOKENISER BECASUE WE CANT USE SPLIT 
     def _next_token(self, equation: str, start: int):
-        """
-        Order ofoperations:
-        1. Skip any space characters that appear before the token.
-        2. Look at the first non-space character:
-             a. If it is an operator (+, -, *, /)
-             b. Otherwise it is the start of a number.
-        3. Return a tuple: (token_string, new_position)
-           The caller stores new_position and passes it in next time
-        4. Return value when there are no more tokens
-        Return ("", length_of_string) Meaning its complete
-
-        Parameters
-        equation : str   The full equation string.
-        start    : int   Character index to begin scanning from.
-        """
         length = len(equation)
 
         #  Phase 1: skip leading spaces 
@@ -94,13 +44,6 @@ class EquationSolver:
     # STEP 1 — INFIX TO POSTFIX  using Shunting-Yard Algorithm
 
     def _parse_infix_to_postfix(self, equation: str) -> CircularQueue:
-        """
-        Convert an infix equation string into a postfix CircularQueue.
-        Parameters
-        equation : str   Space-delimited infix equation.
-        Returns
-        CircularQueue   Items in postfix order, ready for evaluation.
-        """
         # The operator stack temporarily holds operators and '(' while we
         # work out where they belong in the postfix output.
         op_stack = DSAStack()
@@ -188,30 +131,6 @@ class EquationSolver:
 
     # STEP 2 — EVALUATE POSTFIX
     def _evaluate_postfix(self, postfix_queue: CircularQueue) -> float:
-        """
-        Evaluate a postfix expression stored in *postfix_queue*.
-        
-        Scan through the postfix queue one token at a time using a
-        single operand stack:
-
-          If the token is a NUMBER  →  push it onto the operand stack.
-
-          If the token is an OPERATOR  →
-              Remove the TOP item  → this is the RIGHT-hand operand (op2)
-              Remove the NEXT item → this is the LEFT-hand operand  (op1)
-              Compute  op1 <operator> op2
-              Push the result back onto the stack.
-
-
-        Parameters
-        -
-        postfix_queue : CircularQueue
-            Queue of tokens in postfix order (floats and single-char strings).
-
-        Returns
-        -
-        float  — the final computed result.
-        """
         # This stack holds operands (numbers) waiting to be consumed
         # by an operator.
         operand_stack = DSAStack()
@@ -251,42 +170,9 @@ class EquationSolver:
 
         return operand_stack.pop()
 
-    # ==================================================================
     # HELPER — OPERATOR PRECEDENCE
-    # ==================================================================
-
     def _precedence_of(self, op: str) -> int:
-        """
-        Return an integer representing how tightly *op* binds its operands.
 
-        WHY PRECEDENCE MATTERS
-        -
-        In standard arithmetic, multiplication and division bind more
-        tightly than addition and subtraction.  "3 + 4 * 2" means
-        "3 + (4 * 2)" not "(3 + 4) * 2".
-
-        We encode this by assigning integer levels:
-          +  and  -   →  precedence 1  (lower)
-          *  and  /   →  precedence 2  (higher)
-
-        During infix-to-postfix conversion, a higher-precedence operator
-        on the stack is popped BEFORE a lower-precedence incoming operator
-        is pushed.  This ensures higher-priority operations end up earlier
-        in the postfix queue and are therefore evaluated first.
-
-        '(' and unknown symbols return 0 so they are never accidentally
-        popped by a regular operator.
-
-        We use if/elif instead of a dict or hashmap (both are restricted).
-
-        Parameters
-        -
-        op : str   A single-character operator string.
-
-        Returns
-        -
-        int  — 0 (lowest / unknown), 1 (+ -), or 2 (* /)
-        """
         if op == "+" or op == "-":
             return 1       # addition and subtraction — lowest precedence
         elif op == "*" or op == "/":
@@ -294,43 +180,9 @@ class EquationSolver:
         else:
             return 0       # '(' or anything unrecognised — treated as lowest
 
-    # ==================================================================
     # HELPER — EXECUTE A BINARY OPERATION
-    # ==================================================================
 
     def _execute_operation(self, op: str, op1: float, op2: float) -> float:
-        """
-        Apply the binary operator *op* to left operand *op1* and right
-        operand *op2*, and return the result.
-
-        OPERAND ORDER
-        -
-        op1 is the LEFT-hand operand and op2 is the RIGHT-hand operand.
-        This matters for subtraction and division:
-            op1 - op2  →  "10 - 3" = 7    (correct)
-            op2 - op1  →  "3 - 10" = -7   (wrong!)
-
-        DIVISION BY ZERO CHECK
-        -
-        Dividing by zero is undefined.  We check for it explicitly and
-        raise a ZeroDivisionError with a meaningful message rather than
-        letting Python produce a cryptic error or infinity value.
-
-        Parameters
-        -
-        op  : str    Single-character operator: '+', '-', '*', or '/'.
-        op1 : float  Left-hand operand.
-        op2 : float  Right-hand operand.
-
-        Returns
-        -
-        float  — the result of op1 <op> op2.
-
-        Raises
-        
-        ZeroDivisionError  if op is '/' and op2 is 0.
-        ValueError         if op is not one of the four supported operators.
-        """
         if op == "+":
             return op1 + op2
 
