@@ -1,37 +1,16 @@
 """
 DSA Practical 05 - Binary Search Tree
---------------------------------------
-Implements:
-  - DSATreeNode
-  - DSABinarySearchTree  (insert, find, delete, min, max, height, balance,
-                          inorder, preorder, postorder, display)
-  - Interactive menu
-
-Restrictions honoured — none of the following are used:
-  sort(), sorted(), remove(), del (list elements), pop(),
-  tuples, dict, list[], find(), index(), collections.*,
-  heapq, any automatic sorting/searching,
-  high-level structures (HashMap, treelib, binarytree, etc.)
-
-Custom DSAQueueNode / DSAQueue replace built-in lists entirely
-for traversal output.
 """
 
 
-# ═══════════════════════════════════════════════════════════
-#  DSAQueueNode  —  single node in the queue's linked chain
-# ═══════════════════════════════════════════════════════════
+# Single node in linked chain
 class DSAQueueNode:
     def __init__(self, key, value):
         self.key   = key
         self.value = value
         self.next  = None
 
-
-# ═══════════════════════════════════════════════════════════
-#  DSAQueue  —  simple FIFO queue backed by a linked chain
-#  (no built-in list, no pop, no remove, no tuples)
-# ═══════════════════════════════════════════════════════════
+#  DSAQueue FIFO queue backed by a linked chain
 class DSAQueue:
     def __init__(self):
         self._head  = None
@@ -67,9 +46,7 @@ class DSAQueue:
         return self._count
 
 
-# ═══════════════════════════════════════════════════════════
 #  DSATreeNode
-# ═══════════════════════════════════════════════════════════
 class DSATreeNode:
     def __init__(self, key, value):
         self.key   = key
@@ -81,14 +58,12 @@ class DSATreeNode:
         return "(" + str(self.key) + ": " + str(self.value) + ")"
 
 
-# ═══════════════════════════════════════════════════════════
 #  DSABinarySearchTree
-# ═══════════════════════════════════════════════════════════
 class DSABinarySearchTree:
     def __init__(self):
         self._root = None
 
-    # ── insert ──────────────────────────────────────────────
+    # ── insert
     def insert(self, key, value):
         self._root = self._insert_rec(self._root, key, value)
 
@@ -103,7 +78,7 @@ class DSABinarySearchTree:
             node.value = value          # duplicate key -> update value
         return node
 
-    # ── find ────────────────────────────────────────────────
+    # ── find 
     def find(self, key):
         return self._find_rec(self._root, key)
 
@@ -117,7 +92,7 @@ class DSABinarySearchTree:
         else:
             return self._find_rec(node.right, key)
 
-    # ── delete ──────────────────────────────────────────────
+    # ── delete 
     def delete(self, key):
         self._root = self._delete_rec(self._root, key)
 
@@ -148,7 +123,7 @@ class DSABinarySearchTree:
             node = node.left
         return node
 
-    # ── min / max ───────────────────────────────────────────
+    # ── min / max 
     def min(self):
         if self._root is None:
             raise ValueError("Tree is empty.")
@@ -169,7 +144,7 @@ class DSABinarySearchTree:
             return node.key
         return self._max_rec(node.right)
 
-    # ── height ──────────────────────────────────────────────
+    # ── height 
     def height(self):
         return self._height_rec(self._root)
 
@@ -182,7 +157,7 @@ class DSABinarySearchTree:
             return 1 + left_h
         return 1 + right_h
 
-    # ── balance ─────────────────────────────────────────────
+    # ── balance 
     def balance(self):
         """
         Balance percentage (0-100%).
@@ -201,7 +176,7 @@ class DSABinarySearchTree:
             return 0
         return 1 + self._count_nodes(node.left) + self._count_nodes(node.right)
 
-    # ── traversals  (return a DSAQueue, NOT a list) ─────────
+    # ── traversals  (return a DSAQueue) 
     def inorder(self):
         q = DSAQueue()
         self._inorder_rec(self._root, q)
@@ -235,7 +210,7 @@ class DSABinarySearchTree:
             self._postorder_rec(node.right, q)
             q.enqueue(node.key, node.value)
 
-    # ── ASCII display ────────────────────────────────────────
+    # ── ASCII display 
     def display(self):
         """Print a sideways ASCII tree (right branch on top)."""
         self._display_rec(self._root, 0)
@@ -246,14 +221,12 @@ class DSABinarySearchTree:
             print("    " * level + "[" + str(node.key) + "]")
             self._display_rec(node.left,  level + 1)
 
-    # ── empty check ─────────────────────────────────────────
+    # ── empty check 
     def is_empty(self):
         return self._root is None
 
 
-# ═══════════════════════════════════════════════════════════
 #  Helper: drain and print a DSAQueue
-# ═══════════════════════════════════════════════════════════
 def print_queue(label, q):
     """Drain the queue and print every key:value pair."""
     if q.is_empty():
@@ -271,9 +244,7 @@ def print_queue(label, q):
     print(output)
 
 
-# ═══════════════════════════════════════════════════════════
-#  Interactive Menu
-# ═══════════════════════════════════════════════════════════
+#  Menu
 def print_menu():
     print("\n" + "=" * 42)
     print("    Binary Search Tree  --  Main Menu")
@@ -321,7 +292,7 @@ def main():
         choice = input("Enter choice: ").strip()
 
         if choice == "1":
-            # ── Add node ────────────────────────────
+            # ── Add node 
             raw = input("  Enter key (integer): ").strip()
             try:
                 key   = int(raw)
@@ -332,7 +303,7 @@ def main():
                 print("  Key must be an integer.")
 
         elif choice == "2":
-            # ── Delete node ─────────────────────────
+            # ── Delete node 
             if bst.is_empty():
                 print("  Tree is empty -- nothing to delete.")
             else:
@@ -347,7 +318,7 @@ def main():
                     print("  " + str(e))
 
         elif choice == "3":
-            # ── Find node ───────────────────────────
+            # ── Find node 
             if bst.is_empty():
                 print("  Tree is empty.")
             else:
@@ -362,14 +333,14 @@ def main():
                     print("  " + str(e))
 
         elif choice == "4":
-            # ── Traversal ───────────────────────────
+            # ── Traversal 
             if bst.is_empty():
                 print("  Tree is empty.")
             else:
                 display_traversal(bst)
 
         elif choice == "5":
-            # ── ASCII display ───────────────────────
+            # ── ASCII display 
             if bst.is_empty():
                 print("  Tree is empty.")
             else:
@@ -377,7 +348,7 @@ def main():
                 bst.display()
 
         elif choice == "6":
-            # ── Statistics ──────────────────────────
+            # ── Statistics 
             if bst.is_empty():
                 print("  Tree is empty.")
             else:
