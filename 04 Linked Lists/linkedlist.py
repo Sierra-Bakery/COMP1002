@@ -39,15 +39,16 @@ class DSALinkedList:
         else:
             return self.head.value #returns val ue
     def peek_last(self):
-        if self.is_empty():
+        if self.is_empty(): #exception handling
             raise Exception("List is empty")
         else:
             return self.tail.value
     def remove_first(self):
-        if self.is_empty():
+        if self.is_empty(): #exception handling
             raise Exception("List is empty")
         elif self.head == self.tail:
-            temphead = self.head.value
+            #if head = tail then the head and tail nodes esentially get removed
+            temphead = self.head.value #stores the head value tempoarily
             self.head = None 
             self.tail = None
             return temphead
@@ -56,6 +57,24 @@ class DSALinkedList:
             self.head = self.head.next
             self.head.prev = None
             return temphead
-        
-        
-    
+    def remove_last(self):
+        if self.is_empty(): #exception handling
+            raise Exception("List is empty")
+        elif self.head == self.tail:
+            temphead = self.head.value
+            self.head = None
+            self.tail = None
+            return temphead
+        else:
+            temptail = self.tail.value
+            self.tail = self.tail.prev
+            self.tail.next = None
+            return temptail
+    def display():
+        if self.is_empty():
+            print("Empty List")
+        else:
+            currrent = self.head
+            while curr is not None:
+                print(curr)
+                currrent = current.next
