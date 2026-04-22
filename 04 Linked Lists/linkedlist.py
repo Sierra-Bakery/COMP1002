@@ -70,11 +70,11 @@ class DSALinkedList:
             self.tail = self.tail.prev
             self.tail.next = None
             return temptail
-    def display():
+    def display(self):
         if self.is_empty():
             print("Empty List")
         else:
-            currrent = self.head
-            while curr is not None:
-                print(curr)
-                currrent = current.next
+            cur = self.head
+            while cur is not None:
+                print(cur)
+                cur = cur.next #moves through the linked list
