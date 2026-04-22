@@ -5,7 +5,7 @@ class DSAListNode: #node class, acts as an object used by linked list class, con
         self.prev = None #points to the previous node as it is a doubly linked list
 
 class DSALinkedList:
-    def __init__(self, value):
+    def __init__(self):
         #specifies the first and last node
         self.head = None 
         self.tail = None
@@ -23,3 +23,39 @@ class DSALinkedList:
             new_node.next = self.head
             self.head.prev = new_node
             self.head = new_node
+    def insert_last(self, value):
+        #essentially the insert_first class but mirrored
+        new_node = DSAListNode(value)
+        if self.isempty():
+            self.head = new_node
+            self.tail = new_node
+        else:
+            new_node.prev = self.tail
+            self.tail.next = new_node
+            self.tail = new_node
+    def peek_first(self):
+        if self.is_empty():
+            raise Exception("List is empty")
+        else:
+            return self.head.value #returns val ue
+    def peek_last(self):
+        if self.is_empty():
+            raise Exception("List is empty")
+        else:
+            return self.tail.value
+    def remove_first(self):
+        if self.is_empty():
+            raise Exception("List is empty")
+        elif self.head == self.tail:
+            temphead = self.head.value
+            self.head = None 
+            self.tail = None
+            return temphead
+        else:
+            temphead = self.head.value
+            self.head = self.head.next
+            self.head.prev = None
+            return temphead
+        
+        
+    
