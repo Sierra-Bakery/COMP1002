@@ -76,5 +76,5 @@ class DSALinkedList:
         else:
             cur = self.head
             while cur is not None:
-                print(cur)
+                print(cur.value)
                 cur = cur.next #moves through the linked list
