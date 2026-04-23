@@ -1,4 +1,5 @@
-import numpy as np
+#Not using numpy for implementation as its not necessary as we have linked lists
+from DSALL import DSALinkedList, DSAListNode
 
 # Base class
 
