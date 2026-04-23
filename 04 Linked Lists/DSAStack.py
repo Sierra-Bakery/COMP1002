@@ -20,12 +20,3 @@ class DSAStack:
 
     def display(self):
         self._list.display()
-
-# quick test
-s = DSAStack()
-s.push(1)
-s.push(2)
-s.push(3)
-s.display()        # should print 3 2 1
-print(s.pop())     # should print 3
-s.display()        # should print 2 1
