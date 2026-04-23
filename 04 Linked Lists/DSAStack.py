@@ -10,7 +10,9 @@ class DSAStack:
         self._list.insert_first(value)
 
     def pop(self):
-        return self._list.remove_first()
+        value = self._list.peek_first()  # peeks first
+        self._list.remove_first() #then removes
+        return value
 
     def top(self):
         return self._list.peek_first()
