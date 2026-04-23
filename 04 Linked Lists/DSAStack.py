@@ -21,7 +21,7 @@ class DSAStack:
         return self._list.peek_first()
 
     def is_empty(self):
-        return self._list.is_empty()
+        return self._list.isempty()
 
     def display(self):
         self._list.display()

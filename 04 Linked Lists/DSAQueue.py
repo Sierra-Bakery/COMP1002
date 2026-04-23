@@ -15,7 +15,7 @@ class DSAQueue:
 
 
     def is_empty(self):
-        return self._list.is_empty()
+        return self._list.isempty()
 
     # def is_full(self): //not used anymore as linked lists do not have a fixed capacity 
 
