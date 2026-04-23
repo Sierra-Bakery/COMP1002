@@ -1,4 +1,5 @@
-#Not using numpy for implementation as its not necessary as we have linked lists
+# Adapted from previously submitted DSAQueue.py
+# Not using numpy for implementation as its not necessary as we have linked lists
 from DSALL import DSALinkedList, DSAListNode
 
 # Base class
@@ -24,7 +25,9 @@ class DSAQueue:
         return self._list.insert_last(value)
 
     def dequeue(self):
-        return self._list.remove_first()
+        value = self._list.peek_first()
+        self._list.remove_first()
+        return value
 
     def peek(self):
         return self._list.peek_first()
