@@ -1,4 +1,7 @@
 # linked list method is based on the implementation of the linked list in DSALinkedList.py
+from cProfile import label
+
+
 class DSAListNode: #node class, acts as an object used by linked list class, contains value and pointer attributes
     def __init__(self, value):
         self.value = value
@@ -105,3 +108,27 @@ class DSAGraphVertex(): #code for each vertex
     def __str__(self):
         return str(self.label) #returns the label
 
+class DSAGraph(): #we use linked lists here too, to store vertices
+    def __init__(self):
+        self.vertices = DSALinkedList
+
+    def getVertex(self, label):
+        cur = self.vertices.head
+        while cur is not None:
+            if cur.value.label == label:
+                return cur.value   #returns the DSAGraphVertex object
+            cur = cur.next
+        raise Exception(f"Vertex {label} not found")
+    def hasVertex(self, label):
+        cur = self.vertices.head
+        while cur is not None:
+            if cur.value.label == label:
+                return True
+            cur = cur.next
+        return False
+    def addVertex(self, label, value = None):
+        if self.hasVertex(label)
+            raise Exception("Vertex", label, "already exists")
+        else:
+            new_vertex = DSAGraphVertex(label, value)
+            self.vertices.insert_last(new_vertex)
