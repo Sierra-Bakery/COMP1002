@@ -172,10 +172,10 @@ class DSAGraph(): #we use linked lists here too, to store vertices
         return False #not foundd
     def displayAsMatrix(self):
         #prints header row labels
-        print("   ", "")
+        print("         ", "")
         temp = self.vertices.head
         while temp is not None:
-            print(temp.value.label, end = "  ") #prints the labels of the vertices at the top of the matrix
+            print(temp.value.label, end = "   ") #prints the labels of the vertices at the top of the matrix
             temp = temp.next
         print() #new line
         #print rows
@@ -187,39 +187,8 @@ class DSAGraph(): #we use linked lists here too, to store vertices
                 if self.isAdjacent(row.value.label, temp.value.label):
                     print("1 ", end = "  ") #prints 1 if there is an edge between the two vertices
                 else:
-                    print("0 ", end = "") #prints 0 if there is no edge between the two vertices
+                    print("0 ", end = "  ") #prints 0 if there is no edge between the two vertices
                 temp = temp.next
             print("]") #end row
             row = row.next
 
-# create the graph
-g = DSAGraph()
-
-# add vertices
-g.addVertex("A")
-g.addVertex("B")
-g.addVertex("C")
-g.addVertex("D")
-g.addVertex("E")
-
-# add edges (based on the graph from the lecture slides)
-g.addEdge("A", "B")
-g.addEdge("A", "D")
-g.addEdge("A", "E")
-g.addEdge("B", "C")
-g.addEdge("B", "E")
-g.addEdge("C", "D")
-g.addEdge("C", "E")
-
-# test display
-print("=== Adjacency List ===")
-g.displayAsList()
-
-print()
-print("=== Adjacency Matrix ===")
-g.displayAsMatrix()
-
-print()
-print("=== Counts ===")
-print("Vertex count:", g.getVertexCount())
-print("Edge count:", g.getEdgeCount())
