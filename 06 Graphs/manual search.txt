@@ -1,0 +1,151 @@
+Graph 1 Breadth first
+--
+1. Start at A, mark visited, add to queue
+2. Dequeue A, add all unvisited neighbours to queue
+3. Repeat until queue empty
+--
+
+Start: A
+Queue: [A]
+
+Step 1: Dequeue A -> neighbours B, D
+Queue: [B, D]
+Visited: A, B, D
+
+Step 2: Dequeue B -> unvisited neighbours E (A, D already visited)
+Queue: [D, E]
+Visited: A, B, D, E
+
+Step 3: Dequeue D -> unvisited neighbours C, F (A, B already visited)
+Queue: [E, C, F]
+Visited: A, B, D, E, C, F
+
+Step 4: Dequeue E -> unvisited neighbours G (B, F already visited)
+Queue: [C, F, G]
+Visited: A, B, D, E, C, F, G
+
+Step 5: Dequeue C -> no unvisited neighbours
+Step 6: Dequeue F -> no unvisited neighbours
+Step 7: Dequeue G -> no unvisited neighbours
+
+
+Dept first 
+Start: A
+Stack: [A]
+
+Step 1: A -> push B 
+Stack: [A, B]
+Visited: A, B
+
+Step 2: B -> push D 
+Stack: [A, B, D]
+Visited: A, B, D
+
+Step 3: D -> push C
+Stack: [A, B, D, C]
+Visited: A, B, D, C
+
+Step 4: C -> no unvisited neighbours, pop
+Stack: [A, B, D]
+
+Step 5: D -> push F
+Stack: [A, B, D, F]
+Visited: A, B, D, C, F
+
+Step 6: F -> push E
+Stack: [A, B, D, F, E]
+Visited: A, B, D, C, F, E
+
+Step 7: E -> push G
+Stack: [A, B, D, F, E, G]
+Visited: A, B, D, C, F, E, G
+
+Step 8: G -> no unvisited neighbours, pop back through stack
+
+DFS Order: A, B, D, C, F, E, G
+
+Graph 2:
+Breadth first:
+Start: A
+Queue: [A]
+
+Step 1: Dequeue A -> neighbours B, C
+Queue: [B, C]
+Visited: A, B, C
+
+Step 2: Dequeue B -> unvisited neighbours E (A, C already visited)
+Queue: [C, E]
+Visited: A, B, C, E
+
+Step 3: Dequeue C -> unvisited neighbours F (A, B already visited)
+Queue: [E, F]
+Visited: A, B, C, E, F
+
+Step 4: Dequeue E -> unvisited neighbours D, G (B already visited)
+Queue: [F, D, G]
+Visited: A, B, C, E, F, D, G
+
+Step 5: Dequeue F -> unvisited neighbours D, I (C already visited)
+Queue: [D, G, I]
+Visited: A, B, C, E, F, D, G, I
+
+Step 6: Dequeue D -> unvisited neighbours H (E, F already visited)
+Queue: [G, I, H]
+Visited: A, B, C, E, F, D, G, I, H
+
+Step 7: Dequeue G -> unvisited neighbours J (E, H already visited)
+Queue: [I, H, J]
+Visited: A, B, C, E, F, D, G, I, H, J
+
+Step 8: Dequeue I -> no unvisited neighbours
+Step 9: Dequeue H -> no unvisited neighbours
+Step 10: Dequeue J -> no unvisited neighbours
+
+BFS Order: A, B, C, E, F, D, G, I, H, J
+
+Dept first:
+Start: A
+Stack: [A]
+
+Step 1: A -> push B
+Stack: [A, B]
+Visited: A, B
+
+Step 2: B -> push E
+Stack: [A, B, E]
+Visited: A, B, E
+
+Step 3: E -> push D
+Stack: [A, B, E, D]
+Visited: A, B, E, D
+
+Step 4: D -> push F
+Stack: [A, B, E, D, F]
+Visited: A, B, E, D, F
+
+Step 5: F -> push C
+Stack: [A, B, E, D, F, C]
+Visited: A, B, E, D, F, C
+
+Step 6: C -> no unvisited neighbours, pop
+Stack: [A, B, E, D, F]
+
+Step 7: F -> push I
+Stack: [A, B, E, D, F, I]
+Visited: A, B, E, D, F, C, I
+
+Step 8: I -> push H
+Stack: [A, B, E, D, F, I, H]
+Visited: A, B, E, D, F, C, I, H
+
+Step 9: H -> push G
+Stack: [A, B, E, D, F, I, H, G]
+Visited: A, B, E, D, F, C, I, H, G
+
+Step 10: G -> push J
+Stack: [A, B, E, D, F, I, H, G, J]
+Visited: A, B, E, D, F, C, I, H, G, J
+
+Step 11: J -> no unvisited neighbours, pop back through stack
+
+DFS Order: A, B, E, D, F, C, I, H, G, J

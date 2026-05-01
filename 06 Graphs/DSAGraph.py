@@ -192,3 +192,102 @@ class DSAGraph(): #we use linked lists here too, to store vertices
             print("]") #end row
             row = row.next
 
+    def breadthFirstSearch(self):
+        # declare two queues, one for traversal, one for result
+        queue = DSALinkedList()
+        result = DSALinkedList()
+        
+        # clear all visited flags
+        temp = self.vertices.head
+        while temp is not None:
+            temp.value.clearVisited()
+            temp = temp.next
+        
+        # start with first vertex
+        v = self.vertices.head.value
+        v.setVisited()
+        queue.insert_last(v)
+        
+        while not queue.isempty():
+            v = queue.remove_first()
+            # go through adjacency list of v
+            inner = v.links.head
+            while inner is not None:
+                w = inner.value
+                if not w.getVisited():
+                    result.insert_last(v)
+                    result.insert_last(w)
+                    w.setVisited()
+                    queue.insert_last(w)
+                inner = inner.next
+        
+        return result
+
+    def breadthFirstSearch(self):
+        # declare two queues, one for traversal, one for result
+        queue = DSALinkedList()
+        result = DSALinkedList()
+        
+        # clear all visited flags
+        temp = self.vertices.head
+        while temp is not None:
+            temp.value.clearVisited()
+            temp = temp.next
+        
+        # start with first vertex
+        v = self.vertices.head.value
+        v.setVisited()
+        queue.insert_last(v)
+        
+        while not queue.isempty():
+            v = queue.remove_first()
+            # go through adjacency list of v
+            inner = v.links.head
+            while inner is not None:
+                w = inner.value
+                if not w.getVisited():
+                    result.insert_last(v)
+                    result.insert_last(w)
+                    w.setVisited()
+                    queue.insert_last(w)
+                inner = inner.next
+        
+        return result
+
+    def depthFirstSearch(self):
+        # declare a stack for traversal, queue for result
+        stack = DSALinkedList()
+        result = DSALinkedList()
+        
+        # clear all visited flags
+        temp = self.vertices.head
+        while temp is not None:
+            temp.value.clearVisited()
+            temp = temp.next
+        
+        # start with first vertex
+        v = self.vertices.head.value
+        v.setVisited()
+        stack.insert_last(v)
+        
+        while not stack.isempty():
+            # find next unvisited neighbour
+            inner = v.links.head
+            w = None
+            while inner is not None:
+                if not inner.value.getVisited():
+                    w = inner.value
+                    break
+                inner = inner.next
+            
+            if w is not None:
+                result.insert_last(v)
+                result.insert_last(w)
+                w.setVisited()
+                stack.insert_last(w)
+                v = w
+            else:
+                v = stack.remove_last()
+        
+        return result
+
