@@ -1,7 +1,4 @@
 # linked list method is based on the implementation of the linked list in DSALinkedList.py
-from cProfile import label
-
-
 class DSAListNode: #node class, acts as an object used by linked list class, contains value and pointer attributes
     def __init__(self, value):
         self.value = value
@@ -110,7 +107,7 @@ class DSAGraphVertex(): #code for each vertex
 
 class DSAGraph(): #we use linked lists here too, to store vertices
     def __init__(self):
-        self.vertices = DSALinkedList
+        self.vertices = DSALinkedList()
 
     def getVertex(self, label):
         cur = self.vertices.head
@@ -118,7 +115,7 @@ class DSAGraph(): #we use linked lists here too, to store vertices
             if cur.value.label == label:
                 return cur.value   #returns the DSAGraphVertex object
             cur = cur.next
-        raise Exception(f"Vertex {label} not found")
+        raise Exception("Vertex not found")
     def hasVertex(self, label):
         cur = self.vertices.head
         while cur is not None:
@@ -127,8 +124,72 @@ class DSAGraph(): #we use linked lists here too, to store vertices
             cur = cur.next
         return False
     def addVertex(self, label, value = None):
-        if self.hasVertex(label)
-            raise Exception("Vertex", label, "already exists")
+        if self.hasVertex(label):
+            raise Exception("Vertex already exists")
         else:
             new_vertex = DSAGraphVertex(label, value)
             self.vertices.insert_last(new_vertex)
+    def addEdge(self, label1, label2):
+        vertex1 = self.getVertex(label1)
+        vertex2 = self.getVertex(label2)
+        vertex1.addEdge(vertex2) #adds the edge to the first vertex
+        vertex2.addEdge(vertex1) #adds the edge to the second vertex, as it is an undirected graph
+    def getVertexCount(self):
+        count = 0
+        cur = self.vertices.head
+        while cur is not None:
+            count += 1
+            cur = cur.next
+        return count
+    def getEdgeCount(self):
+        count = 0
+        cur = self.vertices.head
+        while cur is not None:
+            inner = cur.value.links.head
+            while inner is not None:
+                count += 1
+                inner = inner.next
+            cur = cur.next
+        return count // 2 #divides by 2 as it is an undirected graph, so each edge is counted twice
+    def displayAsList(self):
+        temp = self.vertices.head
+        while temp is not None: #runs when theres something at the head node of the linked list
+            vertex = temp.value
+            print(vertex.head, end = "|")
+            inner = vertex.links.head
+            while inner is not None:
+                print(inner.value.vertex, end = " ")
+                inner = inner.next
+            print()
+            temp = temp.next
+    def isAdjacent(self, label1, label2): #helper method to display graph as matrix
+        vertex = self.getVertex(label1)
+        temp = vertex.links.head
+        while temp is not None:
+            if temp.value.label == label2: #if found
+                return True
+            temp = temp.next
+        return False #not foundd
+    def displayAsMatrix(self):
+        #prints header row labels
+        print("   ", "")
+        temp = self.vertices.head
+        while temp is not None:
+            print(temp.value.label, end = " [ ") #prints the labels of the vertices at the top of the matrix
+            temp = temp.next
+        print() #new line
+        #print rows
+        row = self.vertices.head
+        while row is not None:
+            print(row.value.label, end = " [ ") #prints the label of the vertex at the start of the row
+            temp = self.vertices.head
+            while temp is not None:
+                if self.isAdjacent(row.value.label, temp.value.label):
+                    print("1 ", end = "  ") #prints 1 if there is an edge between the two vertices
+                else:
+                    print("0 ", end = "") #prints 0 if there is no edge between the two vertices
+                temp = temp.next
+            print("]") #end row
+            row = row.next
+
+        
