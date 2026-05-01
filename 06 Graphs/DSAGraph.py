@@ -223,37 +223,6 @@ class DSAGraph(): #we use linked lists here too, to store vertices
         
         return result
 
-    def breadthFirstSearch(self):
-        # declare two queues, one for traversal, one for result
-        queue = DSALinkedList()
-        result = DSALinkedList()
-        
-        # clear all visited flags
-        temp = self.vertices.head
-        while temp is not None:
-            temp.value.clearVisited()
-            temp = temp.next
-        
-        # start with first vertex
-        v = self.vertices.head.value
-        v.setVisited()
-        queue.insert_last(v)
-        
-        while not queue.isempty():
-            v = queue.remove_first()
-            # go through adjacency list of v
-            inner = v.links.head
-            while inner is not None:
-                w = inner.value
-                if not w.getVisited():
-                    result.insert_last(v)
-                    result.insert_last(w)
-                    w.setVisited()
-                    queue.insert_last(w)
-                inner = inner.next
-        
-        return result
-
     def depthFirstSearch(self):
         # declare a stack for traversal, queue for result
         stack = DSALinkedList()
@@ -290,4 +259,144 @@ class DSAGraph(): #we use linked lists here too, to store vertices
                 v = stack.remove_last()
         
         return result
+    def deleteVertex(self, label):
+        if not self.hasVertex(label):
+            raise Exception("Vertex not found")
+        # remove all edges to this vertex first
+        temp = self.vertices.head
+        while temp is not None:
+            if temp.value.label != label:
+                self.deleteEdge(temp.value.label, label)
+            temp = temp.next
+        # now remove the vertex itself
+        if self.vertices.head.value.label == label:
+            self.vertices.remove_first()
+        else:
+            prev = self.vertices.head
+            cur = self.vertices.head.next
+            while cur is not None:
+                if cur.value.label == label:
+                    prev.next = cur.next
+                    break
+                prev = cur
+                cur = cur.next
 
+    def deleteVertex(self, label):
+        if not self.hasVertex(label):
+            raise Exception("Vertex not found")
+        temp = self.vertices.head
+        while temp is not None:
+            if temp.value.label != label:
+                self.deleteEdge(temp.value.label, label)
+            temp = temp.next
+        if self.vertices.head.value.label == label:
+            self.vertices.remove_first()
+        else:
+            prev = self.vertices.head
+            cur = self.vertices.head.next
+            while cur is not None:
+                if cur.value.label == label:
+                    prev.next = cur.next
+                    break
+                prev = cur
+                cur = cur.next
+    def deleteEdge(self, label1, label2):
+        if not self.hasVertex(label1) or not self.hasVertex(label2):
+            raise Exception("Vertex not found")
+        # remove label2 from label1's links
+        vertex1 = self.getVertex(label1)
+        prev = None
+        temp = vertex1.links.head
+        while temp is not None:
+            if temp.value.label == label2:
+                if prev is None:
+                    vertex1.links.head = temp.next
+                else:
+                    prev.next = temp.next
+                break
+            prev = temp
+            temp = temp.next
+        # remove label1 from label2's links
+        vertex2 = self.getVertex(label2)
+        prev = None
+        temp = vertex2.links.head
+        while temp is not None:
+            if temp.value.label == label1:
+                if prev is None:
+                    vertex2.links.head = temp.next
+                else:
+                    prev.next = temp.next
+                break
+            prev = temp
+            temp = temp.next
+def menu():
+    g = DSAGraph()
+    option = 0
+
+    while option != 9:
+        print("\n=== Graph Menu ===")
+        print("1. Add vertex")
+        print("2. Delete vertex")
+        print("3. Add edge")
+        print("4. Delete edge")
+        print("5. Display as list")
+        print("6. Display as matrix")
+        print("7. Breadth First Search")
+        print("8. Depth First Search")
+        print("9. Quit")
+        
+        option = int(input("Enter option: "))
+        
+        if option == 1:
+            label = input("Enter vertex label: ")
+            g.addVertex(label)
+            print(f"Vertex {label} added!")
+            
+        elif option == 2:
+            label = input("Enter vertex label to delete: ")
+            g.deleteVertex(label)
+            print(f"Vertex {label} deleted!")
+            
+        elif option == 3:
+            label1 = input("Enter first vertex label: ")
+            label2 = input("Enter second vertex label: ")
+            g.addEdge(label1, label2)
+            print(f"Edge {label1}-{label2} added!")
+            
+        elif option == 4:
+            label1 = input("Enter first vertex label: ")
+            label2 = input("Enter second vertex label: ")
+            g.deleteEdge(label1, label2)
+            print(f"Edge {label1}-{label2} deleted!")
+            
+        elif option == 5:
+            g.displayAsList()
+            
+        elif option == 6:
+            g.displayAsMatrix()
+            
+        elif option == 7:
+            bfs = g.breadthFirstSearch()
+            print("BFS Order: ", end="")
+            temp = bfs.head
+            while temp is not None:
+                print(temp.value.label, end=" ")
+                temp = temp.next
+            print()
+            
+        elif option == 8:
+            dfs = g.depthFirstSearch()
+            print("DFS Order: ", end="")
+            temp = dfs.head
+            while temp is not None:
+                print(temp.value.label, end=" ")
+                temp = temp.next
+            print()
+            
+        elif option == 9:
+            print("Goodbye!")
+            
+        else:
+            print("Invalid option, try again!")
+
+menu()
