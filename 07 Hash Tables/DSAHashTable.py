@@ -1,26 +1,18 @@
-# =============================================================================
 # DSAHashTable.py
 # Hash Table implementation with double-hashing, auto-resize, and file I/O.
-# =============================================================================
 
 import math
 import os
 import sys
 
 
-# ---------------------------------------------------------------------------
+
 # DSAHashEntry
-# ---------------------------------------------------------------------------
+
 class DSAHashEntry:
     """
     Companion class that stores one slot in the hash array.
-
-    State values
-    ------------
-    0 = FREE          – never been used (probing can stop here)
-    1 = USED          – currently occupied
-    2 = PREVIOUSLY_USED – was occupied but has been removed
-                         (probing must continue past this slot)
+    0 = FREE | 1 = USED | 2 = PREVIOUSLY_USED – was occupied but has been removed, probing must continue past this slot
     """
 
     FREE            = 0
@@ -33,19 +25,15 @@ class DSAHashEntry:
         self.state = DSAHashEntry.FREE
 
 
-# ---------------------------------------------------------------------------
+
 # DSAHashTable
-# ---------------------------------------------------------------------------
+
 class DSAHashTable:
     """
-    Hash table using:
-      * Polynomial rolling hash  (hash1) for the primary index.
-      * A second hash            (hash2) for the step size (double-hashing).
-      * Automatic resizing when load factor crosses 0.60 (grow) or 0.25 (shrink).
-      * Table capacity is always prime (reduces clustering).
-
-    Only primitive arrays (pre-allocated Python lists) are used internally.
-    No dict, set, defaultdict, tuples, or any high-level data structure.
+       Polynomial rolling hash  hash1 for the PRIMARYt index.
+       A second hash            hash2 for the STEP SIZE, double-hashing.
+       Automatic resizing when load factor crosses 0.60 grow and 0.25 shrink.
+       Table capacity is always #PRIME# stops the  clustering.
     """
 
     UPPER_LOAD       = 0.60
@@ -60,10 +48,7 @@ class DSAHashTable:
         self._count    = 0
         self._array    = self._make_array(capacity)
 
-    # ================================================================
     # Public interface
-    # ================================================================
-
     def put(self, key, value):
         """
         Insert or update a key/value pair.
@@ -95,8 +80,7 @@ class DSAHashTable:
 
     def remove(self, key):
         """
-        Mark the slot PREVIOUSLY_USED so probing chains remain intact,
-        then shrink when the load factor drops below LOWER_LOAD.
+        Mark the slot PREVIOUSLY_USED so probing chains remain intact, then shrink when the load factor drops below LOWER_LOAD.
         """
         idx = self._find(key)
         if idx == -1 or self._array[idx].state != DSAHashEntry.USED:
@@ -120,9 +104,9 @@ class DSAHashTable:
     def capacity(self):
         return self._capacity
 
-    # ================================================================
+    
     # File I/O
-    # ================================================================
+    
 
     def save_to_csv(self, filename):
         """Write every USED entry to filename as  key,value  lines."""
@@ -157,38 +141,20 @@ class DSAHashTable:
                 ht.put(key, value)
         return ht
 
-    # ================================================================
+    
     # Hash functions
-    # ================================================================
+    
 
     def _hash1(self, key):
-        """
-        Polynomial rolling hash (djb2-style multiplier 31).
-
-        Good hash function criteria:
-          1. Repeatable     – identical key always produces the same index.  ✓
-          2. Fast           – O(|key|), only multiply+add per character.     ✓
-          3. Even spread    – prime multiplier (31) and prime table size
-                              together minimise clustering.                  ✓
-          4. Low collisions – accumulating every character's ordinal means
-                              single-character differences propagate through
-                              the entire hash value.                         ✓ (partial)
-        """
+        """Polynomial rolling hash USING: djb2-style multiplier 31"""
         h = 0
         for ch in key:
             h = (h * 31 + ord(ch)) % self._capacity
         return h
 
     def _hash2(self, key):
-        """
-        Second hash – provides the step size for double-hashing.
-
-        Formula:  step = q - (raw_hash mod q)
-        where q is the largest prime less than the table capacity.
-
-        Because q < capacity and capacity is prime, gcd(step, capacity) = 1,
-        guaranteeing the probe sequence visits every slot before repeating.
-        step is also forced to be at least 1 (never zero).
+        """Second hash the step size for double-hashing. USING: step = q - (raw_hash mod q)
+        WHERE q is the largest PRIME less than the table cap
         """
         q = self._prev_prime(self._capacity)
         h = 0
@@ -201,9 +167,9 @@ class DSAHashTable:
         """Return (start_index, step_size) for double hashing."""
         return self._hash1(key), self._hash2(key)
 
-    # ================================================================
+    
     # Internal helpers
-    # ================================================================
+    
 
     def _make_array(self, size):
         arr = [None] * size
@@ -213,11 +179,8 @@ class DSAHashTable:
 
     def _find(self, key):
         """
-        Probe with double hashing and return the index of key,
-        or -1 if not found.
-
-        Stops at a FREE slot (definite miss).
-        Skips PREVIOUSLY_USED slots (chain must not be broken).
+        Probe with double hashing and return the index of key, OR -1 if NOT FOUND
+        Stops at a FREE slot (definite miss). Skips PREVIOUSLY USED slots as the chain must not be broken :(
         """
         start, step = self._hash(key)
         idx = start
@@ -247,9 +210,8 @@ class DSAHashTable:
     def _resize(self, hint):
         """
         Rebuild the table at the next prime >= hint.
-
-        Time complexity: O(n)  – every stored entry is re-hashed once.
-        Space complexity: O(n) – new array allocated, old one released.
+        Time complexity: O(n) Stored entries are treached once.
+        Space complexity: O(n) Array is freed after use, only one array at a time in use.\
         """
         new_cap   = self._next_prime(max(hint, DSAHashTable.DEFAULT_CAPACITY))
         old_array = self._array
@@ -263,9 +225,9 @@ class DSAHashTable:
                 self._insert(entry.key, entry.value)
                 self._count += 1
 
-    # ================================================================
+    
     # Prime helpers (no external libraries)
-    # ================================================================
+    
 
     @staticmethod
     def _is_prime(n):
@@ -310,9 +272,9 @@ class DSAHashTable:
         return "\n".join(lines)
 
 
-# =============================================================================
+
 # Helpers
-# =============================================================================
+
 
 def sep(title=""):
     print("\n" + "=" * 60)
@@ -322,18 +284,7 @@ def sep(title=""):
 
 
 def _resolve_path(filename):
-    """
-    Turn a bare filename (or any relative/absolute path) into an absolute path.
-
-    Resolution order:
-      1. If the path is already absolute, use it as-is.
-      2. Check the current working directory first.
-      3. If not found there, also check the directory that contains this
-         script – so the file can sit next to DSAHashTable.py regardless
-         of where the user invokes Python from.
-
-    Returns the resolved path string (the caller checks existence).
-    """
+    """GETS ABSLOUTE PATH FOR FILENAME and send it to the param"""
     if os.path.isabs(filename):
         return filename                         # already absolute
 
@@ -348,28 +299,20 @@ def _resolve_path(filename):
     if os.path.exists(script_path):
         return script_path
 
-    # Neither location has the file – return the CWD version so the
-    # later existence check produces a clear "not found" error message.
     return cwd_path
 
 
 def _parse_args():
     """
-    Minimal argument parser (no argparse – manual argv scanning).
+    Minimal argument parser
+    ##### FLAGS
+    -f <filename>   CSV file
+    -h     Print usage (needed for assessment?)
 
-    Supported flags
-    ---------------
-    -f <filename>   CSV file to load into the hash table
-    -h / --help     Print usage and exit
-
-    The filename may be:
-      • a bare name       e.g.  RandomNames7000.csv
-      • a relative path   e.g.  data/names.csv
-      • an absolute path  e.g.  /home/user/data/names.csv
-
-    Bare names and relative paths are resolved against the current working
-    directory first, then against the script's own directory, so the file
-    works as long as it sits in either location.
+    The filenames taken: 
+    name "RandomNames7000.csv"
+    path  "data/names.csv"
+    absolute path  " /home/user/data/names.csv "
     """
     args  = sys.argv[1:]          # skip script name
     fname = None
@@ -412,7 +355,7 @@ def _generate_sample_csv(path):
         ("14555555","Eva Black"),       ("14666666","Frank Green"),
         ("14777777","Grace Hall"),      ("14888888","Harry King"),
         ("14999999","Isla Lee"),        ("14000001","Jack Scott"),
-        # intentional duplicates – should not increase count
+        # intentional duplicates!
         ("14495655","Sofia Bonfiglio"), ("14224671","Ashlee Capellan"),
     ]
     with open(path, 'w') as f:
@@ -422,11 +365,9 @@ def _generate_sample_csv(path):
 
 
 def _run_unit_tests():
-    """Internal correctness tests (always run before the file demo)."""
+    """Internal tests"""
 
-    # ------------------------------------------------------------------
-    # 1.  Basic put / get / hasKey
-    # ------------------------------------------------------------------
+    #### 1.  Basic put / get / hasKey
     sep("1. Basic operations (capacity=7)")
     ht = DSAHashTable(7)
     pairs = [("apple","fruit"),("carrot","vegetable"),("mango","fruit"),
@@ -446,9 +387,8 @@ def _run_unit_tests():
     ht.put("apple", "NEW_FRUIT")
     print(f"  get('apple') = {ht.get('apple')!r}  count unchanged = {ht.count()}")
 
-    # ------------------------------------------------------------------
-    # 2.  Remove + probing correctness
-    # ------------------------------------------------------------------
+
+    #### 2.  Remove + probing correctness
     sep("2. Remove – probing chain stays intact")
     small = DSAHashTable(7)
     small.put("Key1", "Val1")
@@ -459,9 +399,8 @@ def _run_unit_tests():
     print(f"  After  remove  hasKey(Key1)={small.hasKey('Key1')}  hasKey(Key2)={small.hasKey('Key2')}")
     print(f"  get('Key2') = {small.get('Key2')!r}   get('Key3') = {small.get('Key3')!r}")
 
-    # ------------------------------------------------------------------
-    # 3.  Auto-resize grow
-    # ------------------------------------------------------------------
+
+    #### 3.  Auto-resize grow
     sep("3. Auto-resize – grow (start cap=11)")
     ht2 = DSAHashTable(11)
     rnames = ["Alice","Bob","Carol","Dave","Eve","Frank","Gina","Hank","Ivy","Jade"]
@@ -472,9 +411,8 @@ def _run_unit_tests():
             print(f"  *** GREW  {old} -> {ht2.capacity()}  after inserting {name!r}")
     print(f"  Final: count={ht2.count()}  cap={ht2.capacity()}  load={ht2.load_factor():.3f}")
 
-    # ------------------------------------------------------------------
-    # 4.  Auto-resize shrink
-    # ------------------------------------------------------------------
+
+    #### 4.  Auto-resize shrink
     sep("4. Auto-resize – shrink")
     for name in rnames[:-3]:
         old = ht2.capacity()
@@ -483,9 +421,8 @@ def _run_unit_tests():
             print(f"  *** SHRANK {old} -> {ht2.capacity()}  after removing {name!r}")
     print(f"  Final: count={ht2.count()}  cap={ht2.capacity()}  load={ht2.load_factor():.3f}")
 
-    # ------------------------------------------------------------------
-    # 5.  Save & reload small table
-    # ------------------------------------------------------------------
+
+    #### 5.  Save & reload small table
     sep("5. File I/O – save and reload small table")
     save_ht = DSAHashTable(11)
     io_pairs = [("001","Alpha"),("002","Beta"),("003","Gamma"),("004","Delta")]
@@ -501,18 +438,12 @@ def _run_unit_tests():
         ok = "OK" if result == v else f"FAIL (got {result!r})"
         print(f"    {k} -> {result!r}  [{ok}]")
 
-
-# =============================================================================
-# Main entry point
-# =============================================================================
-
+# # # # START OF PROGRAM # # # #
 if __name__ == "__main__":
 
     csv_path = _parse_args()        # may be None if -f was not supplied
-
-    # ----------------------------------------------------------------
+    
     # No file supplied → ask the user what to do
-    # ----------------------------------------------------------------
     if csv_path is None:
         print("\nNo input file specified.")
         print("  [1] Generate a random sample dataset and continue")
@@ -531,21 +462,15 @@ if __name__ == "__main__":
             else:
                 print("  Please enter 1 or 2.")
 
-    # ----------------------------------------------------------------
     # File supplied (or just generated) → verify it exists
-    # ----------------------------------------------------------------
     if not os.path.exists(csv_path):
         print(f"ERROR: File not found: '{csv_path}'")
         sys.exit(1)
 
-    # ----------------------------------------------------------------
     # Run internal unit tests first
-    # ----------------------------------------------------------------
     _run_unit_tests()
 
-    # ----------------------------------------------------------------
     # Load the CSV, print stats, spot-check, save output
-    # ----------------------------------------------------------------
     sep(f"6. Loading '{csv_path}'")
     big = DSAHashTable.load_from_csv(csv_path)
     print(f"  Loaded:  count={big.count()}  cap={big.capacity()}  load={big.load_factor():.3f}")
