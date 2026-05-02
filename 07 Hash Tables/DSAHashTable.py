@@ -310,7 +310,7 @@ class DSAHashTable:
 
 
 # =============================================================================
-# Main – tests
+# Helpers
 # =============================================================================
 
 def sep(title=""):
@@ -320,7 +320,65 @@ def sep(title=""):
         print("=" * 60)
 
 
-if __name__ == "__main__":
+def _parse_args():
+    """
+    Minimal argument parser (no argparse – manual argv scanning).
+
+    Supported flags
+    ---------------
+    -f <filename>   CSV file to load into the hash table
+    -h / --help     Print usage and exit
+    """
+    import sys
+    args  = sys.argv[1:]          # skip script name
+    fname = None
+    i = 0
+    while i < len(args):
+        token = args[i]
+        if token == "-f":
+            i += 1
+            if i >= len(args):
+                print("ERROR: -f requires a filename argument.")
+                print("Usage: python3 DSAHashTable.py -f <filename.csv>")
+                sys.exit(1)
+            fname = args[i]
+        elif token in ("-h", "--help"):
+            print("Usage: python3 DSAHashTable.py [-f <filename.csv>]")
+            print("  -f <filename>  CSV file (key,value per line) to load")
+            print("  -h / --help    Show this help message")
+            sys.exit(0)
+        else:
+            print(f"ERROR: Unknown argument '{token}'")
+            print("Usage: python3 DSAHashTable.py -f <filename.csv>")
+            sys.exit(1)
+        i += 1
+    return fname
+
+
+def _generate_sample_csv(path):
+    """Write a built-in 22-entry sample CSV (includes 2 deliberate duplicates)."""
+    sample = [
+        ("14495655","Sofia Bonfiglio"), ("14224671","Ashlee Capellan"),
+        ("14707100","Dona Mcinnes"),    ("14644633","Maricela Landreneau"),
+        ("14147356","Elinor Raco"),     ("14393910","Cody Mcmartin"),
+        ("14799737","Katy Vacek"),      ("14431660","Mathew Mercedes"),
+        ("14541837","Karina Rossin"),   ("14593654","Mathew Milian"),
+        ("14111111","Anna Smith"),      ("14222222","Brian Jones"),
+        ("14333333","Clara Brown"),     ("14444444","Derek White"),
+        ("14555555","Eva Black"),       ("14666666","Frank Green"),
+        ("14777777","Grace Hall"),      ("14888888","Harry King"),
+        ("14999999","Isla Lee"),        ("14000001","Jack Scott"),
+        # intentional duplicates – should not increase count
+        ("14495655","Sofia Bonfiglio"), ("14224671","Ashlee Capellan"),
+    ]
+    with open(path, 'w') as f:
+        for k, v in sample:
+            f.write(f"{k},{v}\n")
+    return sample
+
+
+def _run_unit_tests():
+    """Internal correctness tests (always run before the file demo)."""
 
     # ------------------------------------------------------------------
     # 1.  Basic put / get / hasKey
@@ -332,8 +390,8 @@ if __name__ == "__main__":
     for k, v in pairs:
         old_cap = ht.capacity()
         ht.put(k, v)
-        resize_msg = f"  *** RESIZED {old_cap}->{ht.capacity()}" if ht.capacity() != old_cap else ""
-        print(f"  put({k!r},{v!r})  load={ht.load_factor():.2f}  cap={ht.capacity()}{resize_msg}")
+        resize_tag = f"  *** RESIZED {old_cap}->{ht.capacity()}" if ht.capacity() != old_cap else ""
+        print(f"  put({k!r},{v!r})  load={ht.load_factor():.2f}  cap={ht.capacity()}{resize_tag}")
 
     print()
     for k, _ in pairs:
@@ -362,8 +420,8 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
     sep("3. Auto-resize – grow (start cap=11)")
     ht2 = DSAHashTable(11)
-    names = ["Alice","Bob","Carol","Dave","Eve","Frank","Gina","Hank","Ivy","Jade"]
-    for name in names:
+    rnames = ["Alice","Bob","Carol","Dave","Eve","Frank","Gina","Hank","Ivy","Jade"]
+    for name in rnames:
         old = ht2.capacity()
         ht2.put(name, name.lower())
         if ht2.capacity() != old:
@@ -374,7 +432,7 @@ if __name__ == "__main__":
     # 4.  Auto-resize shrink
     # ------------------------------------------------------------------
     sep("4. Auto-resize – shrink")
-    for name in names[:-3]:
+    for name in rnames[:-3]:
         old = ht2.capacity()
         ht2.remove(name)
         if ht2.capacity() != old:
@@ -384,56 +442,72 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
     # 5.  Save & reload small table
     # ------------------------------------------------------------------
-    sep("5. File I/O – save and reload")
+    sep("5. File I/O – save and reload small table")
     save_ht = DSAHashTable(11)
     io_pairs = [("001","Alpha"),("002","Beta"),("003","Gamma"),("004","Delta")]
     for k, v in io_pairs:
         save_ht.put(k, v)
-    save_ht.save_to_csv("/mnt/user-data/outputs/small_test.csv")
-    print("  Saved small_test.csv")
+    save_ht.save_to_csv("small_test_output.csv")
+    print("  Saved small_test_output.csv")
 
-    loaded = DSAHashTable.load_from_csv("/mnt/user-data/outputs/small_test.csv")
+    loaded = DSAHashTable.load_from_csv("small_test_output.csv")
     print("  Reloaded and verified:")
     for k, v in io_pairs:
         result = loaded.get(k)
         ok = "OK" if result == v else f"FAIL (got {result!r})"
         print(f"    {k} -> {result!r}  [{ok}]")
 
-    # ------------------------------------------------------------------
-    # 6.  RandomNames7000.csv
-    # ------------------------------------------------------------------
-    sep("6. RandomNames7000.csv – load, spot-check, save")
-    csv_path = None
-    for candidate in ["/mnt/user-data/uploads/RandomNames7000.csv",
-                      "RandomNames7000.csv"]:
-        if os.path.exists(candidate):
-            csv_path = candidate
-            break
 
+# =============================================================================
+# Main entry point
+# =============================================================================
+
+if __name__ == "__main__":
+    import sys
+
+    csv_path = _parse_args()        # may be None if -f was not supplied
+
+    # ----------------------------------------------------------------
+    # No file supplied → ask the user what to do
+    # ----------------------------------------------------------------
     if csv_path is None:
-        print("  File not found – creating 25-entry sample (with 2 duplicates).")
-        csv_path = "/mnt/user-data/outputs/sample_names.csv"
-        sample = [
-            ("14495655","Sofia Bonfiglio"), ("14224671","Ashlee Capellan"),
-            ("14707100","Dona Mcinnes"),    ("14644633","Maricela Landreneau"),
-            ("14147356","Elinor Raco"),     ("14393910","Cody Mcmartin"),
-            ("14799737","Katy Vacek"),      ("14431660","Mathew Mercedes"),
-            ("14541837","Karina Rossin"),   ("14593654","Mathew Milian"),
-            ("14111111","Anna Smith"),      ("14222222","Brian Jones"),
-            ("14333333","Clara Brown"),     ("14444444","Derek White"),
-            ("14555555","Eva Black"),       ("14666666","Frank Green"),
-            ("14777777","Grace Hall"),      ("14888888","Harry King"),
-            ("14999999","Isla Lee"),        ("14000001","Jack Scott"),
-            # intentional duplicates
-            ("14495655","Sofia Bonfiglio"), ("14224671","Ashlee Capellan"),
-        ]
-        with open(csv_path, 'w') as f:
-            for k, v in sample:
-                f.write(f"{k},{v}\n")
+        print("\nNo input file specified.")
+        print("  [1] Generate a random sample dataset and continue")
+        print("  [2] Exit")
+        print()
+        while True:
+            choice = input("Enter choice (1 or 2): ").strip()
+            if choice == "1":
+                csv_path = "sample_generated.csv"
+                _generate_sample_csv(csv_path)
+                print(f"\nSample data written to '{csv_path}'.")
+                break
+            elif choice == "2":
+                print("Exiting.")
+                sys.exit(0)
+            else:
+                print("  Please enter 1 or 2.")
 
+    # ----------------------------------------------------------------
+    # File supplied (or just generated) → verify it exists
+    # ----------------------------------------------------------------
+    if not os.path.exists(csv_path):
+        print(f"ERROR: File not found: '{csv_path}'")
+        sys.exit(1)
+
+    # ----------------------------------------------------------------
+    # Run internal unit tests first
+    # ----------------------------------------------------------------
+    _run_unit_tests()
+
+    # ----------------------------------------------------------------
+    # Load the CSV, print stats, spot-check, save output
+    # ----------------------------------------------------------------
+    sep(f"6. Loading '{csv_path}'")
     big = DSAHashTable.load_from_csv(csv_path)
     print(f"  Loaded:  count={big.count()}  cap={big.capacity()}  load={big.load_factor():.3f}")
 
+    # Spot-check the first few known keys from the sample/spec
     spot = [("14495655","Sofia Bonfiglio"),
             ("14224671","Ashlee Capellan"),
             ("14707100","Dona Mcinnes")]
@@ -441,13 +515,13 @@ if __name__ == "__main__":
     for k, expected in spot:
         if big.hasKey(k):
             val = big.get(k)
-            ok  = "OK" if val == expected else f"FAIL (got {val!r})"
+            ok  = "OK" if val == expected else f"MISMATCH (got {val!r})"
             print(f"    {k} -> {val!r}  [{ok}]")
         else:
-            print(f"    {k} -> NOT FOUND")
+            print(f"    {k} -> NOT FOUND (key absent in this dataset)")
 
-    out = "/mnt/user-data/outputs/saved_names.csv"
-    big.save_to_csv(out)
-    print(f"  Saved to {out}")
+    out_path = "saved_output.csv"
+    big.save_to_csv(out_path)
+    print(f"\n  Hash table saved to '{out_path}'")
 
     sep("All tests complete")
