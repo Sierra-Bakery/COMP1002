@@ -1,0 +1,402 @@
+# linked list method is based on the implementation of the linked list in DSALinkedList.py
+class DSAListNode: #node class, acts as an object used by linked list class, contains value and pointer attributes
+    def __init__(self, value):
+        self.value = value
+        self.next = None #pointer attribute, points to none as the data structure points to null
+        self.prev = None #points to the previous node as it is a doubly linked list
+
+class DSALinkedList:
+    def __init__(self):
+        #specifies the first and last node
+        self.head = None 
+        self.tail = None
+    def isempty(self):
+        return self.head is None
+        #returns if the list is empty
+    def insert_first(self, value):
+        new_node = DSAListNode(value)
+        if self.isempty():
+            #means it is the only node in the list, so it is both the head and tail (new node)
+            self.head = new_node
+            self.tail = new_node
+        else:
+            #links new node to the current head
+            new_node.next = self.head
+            self.head.prev = new_node
+            self.head = new_node
+    def insert_last(self, value):
+        #essentially the insert_first class but mirrored
+        new_node = DSAListNode(value)
+        if self.isempty():
+            self.head = new_node
+            self.tail = new_node
+        else:
+            new_node.prev = self.tail
+            self.tail.next = new_node
+            self.tail = new_node
+    def peek_first(self):
+        if self.isempty():
+            raise Exception("List is empty")
+        else:
+            return self.head.value #returns val ue
+    def peek_last(self):
+        if self.isempty(): #exception handling
+            raise Exception("List is empty")
+        else:
+            return self.tail.value
+    def remove_first(self):
+        if self.isempty(): #exception handling
+            raise Exception("List is empty")
+        elif self.head == self.tail:
+            #if head = tail then the head and tail nodes esentially get removed
+            temphead = self.head.value #stores the head value tempoarily
+            self.head = None 
+            self.tail = None
+            return temphead
+        else:
+            temphead = self.head.value
+            self.head = self.head.next
+            self.head.prev = None
+            return temphead
+    def remove_last(self):
+        if self.isempty(): #exception handling
+            raise Exception("List is empty")
+        elif self.head == self.tail:
+            temphead = self.head.value
+            self.head = None
+            self.tail = None
+            return temphead
+        else:
+            temptail = self.tail.value
+            self.tail = self.tail.prev
+            self.tail.next = None
+            return temptail
+    def display(self):
+        if self.isempty():
+            print("Empty List")
+        else:
+            cur = self.head
+            while cur is not None:
+                print(cur.value)
+                cur = cur.next #moves through the linked list
+
+###################################GRAPH CODE######################################
+
+class DSAGraphVertex(): #code for each vertex
+    def __init__(self, label, value): #initializes the parts of the graph
+        self.label = label
+        self.value = value
+        self.links = DSALinkedList() #takes linked list class from earlier
+        self.visited = False #takes boolean, either visited or not, needed for searching
+    def getLabel(self):
+        return self.label #the first two get classes are really simple, just outputting the things from the class
+    def getValue(self):
+        return self.value
+    def getAdjacent(self):
+        return self.links #gets the whole LinkedList of adjacent nodes
+    def addEdge(self, vertex):
+        self.links.insert_last(vertex) #adds edge onto tail node of the linked list
+    def setVisited(self):
+        self.visited = True #just changing the boolean values for visited
+    def clearVisited(self):
+        self.visited = False
+    def getVisited(self):
+        return self.visited
+    def __str__(self):
+        return str(self.label) #returns the label
+
+class DSAGraph(): #we use linked lists here too, to store vertices
+    def __init__(self):
+        self.vertices = DSALinkedList()
+
+    def getVertex(self, label):
+        cur = self.vertices.head
+        while cur is not None:
+            if cur.value.label == label:
+                return cur.value   #returns the DSAGraphVertex object
+            cur = cur.next
+        raise Exception("Vertex not found")
+    def hasVertex(self, label):
+        cur = self.vertices.head
+        while cur is not None:
+            if cur.value.label == label:
+                return True
+            cur = cur.next
+        return False
+    def addVertex(self, label, value = None):
+        if self.hasVertex(label):
+            raise Exception("Vertex already exists")
+        else:
+            new_vertex = DSAGraphVertex(label, value)
+            self.vertices.insert_last(new_vertex)
+    def addEdge(self, label1, label2):
+        vertex1 = self.getVertex(label1)
+        vertex2 = self.getVertex(label2)
+        vertex1.addEdge(vertex2) #adds the edge to the first vertex
+        vertex2.addEdge(vertex1) #adds the edge to the second vertex, as it is an undirected graph
+    def getVertexCount(self):
+        count = 0
+        cur = self.vertices.head
+        while cur is not None:
+            count += 1
+            cur = cur.next
+        return count
+    def getEdgeCount(self):
+        count = 0
+        cur = self.vertices.head
+        while cur is not None:
+            inner = cur.value.links.head
+            while inner is not None:
+                count += 1
+                inner = inner.next
+            cur = cur.next
+        return count // 2 #divides by 2 as it is an undirected graph, so each edge is counted twice
+    def displayAsList(self):
+        temp = self.vertices.head
+        while temp is not None: #runs when theres something at the head node of the linked list
+            vertex = temp.value
+            print(vertex.label, end = "|")
+            inner = vertex.links.head
+            while inner is not None:
+                print(inner.value.label, end = " ")
+                inner = inner.next
+            print()
+            temp = temp.next
+    def isAdjacent(self, label1, label2): #helper method to display graph as matrix
+        vertex = self.getVertex(label1)
+        temp = vertex.links.head
+        while temp is not None:
+            if temp.value.label == label2: #if found
+                return True
+            temp = temp.next
+        return False #not foundd
+    def displayAsMatrix(self):
+        #prints header row labels
+        print("         ", "")
+        temp = self.vertices.head
+        while temp is not None:
+            print(temp.value.label, end = "   ") #prints the labels of the vertices at the top of the matrix
+            temp = temp.next
+        print() #new line
+        #print rows
+        row = self.vertices.head
+        while row is not None:
+            print(row.value.label, end = " [ ") #prints the label of the vertex at the start of the row
+            temp = self.vertices.head
+            while temp is not None:
+                if self.isAdjacent(row.value.label, temp.value.label):
+                    print("1 ", end = "  ") #prints 1 if there is an edge between the two vertices
+                else:
+                    print("0 ", end = "  ") #prints 0 if there is no edge between the two vertices
+                temp = temp.next
+            print("]") #end row
+            row = row.next
+
+    def breadthFirstSearch(self):
+        # declare two queues, one for traversal, one for result
+        queue = DSALinkedList()
+        result = DSALinkedList()
+        
+        # clear all visited flags
+        temp = self.vertices.head
+        while temp is not None:
+            temp.value.clearVisited()
+            temp = temp.next
+        
+        # start with first vertex
+        v = self.vertices.head.value
+        v.setVisited()
+        queue.insert_last(v)
+        
+        while not queue.isempty():
+            v = queue.remove_first()
+            # go through adjacency list of v
+            inner = v.links.head
+            while inner is not None:
+                w = inner.value
+                if not w.getVisited():
+                    result.insert_last(v)
+                    result.insert_last(w)
+                    w.setVisited()
+                    queue.insert_last(w)
+                inner = inner.next
+        
+        return result
+
+    def depthFirstSearch(self):
+        # declare a stack for traversal, queue for result
+        stack = DSALinkedList()
+        result = DSALinkedList()
+        
+        # clear all visited flags
+        temp = self.vertices.head
+        while temp is not None:
+            temp.value.clearVisited()
+            temp = temp.next
+        
+        # start with first vertex
+        v = self.vertices.head.value
+        v.setVisited()
+        stack.insert_last(v)
+        
+        while not stack.isempty():
+            # find next unvisited neighbour
+            inner = v.links.head
+            w = None
+            while inner is not None:
+                if not inner.value.getVisited():
+                    w = inner.value
+                    break
+                inner = inner.next
+            
+            if w is not None:
+                result.insert_last(v)
+                result.insert_last(w)
+                w.setVisited()
+                stack.insert_last(w)
+                v = w
+            else:
+                v = stack.remove_last()
+        
+        return result
+    def deleteVertex(self, label):
+        if not self.hasVertex(label):
+            raise Exception("Vertex not found")
+        # remove all edges to this vertex first
+        temp = self.vertices.head
+        while temp is not None:
+            if temp.value.label != label:
+                self.deleteEdge(temp.value.label, label)
+            temp = temp.next
+        # now remove the vertex itself
+        if self.vertices.head.value.label == label:
+            self.vertices.remove_first()
+        else:
+            prev = self.vertices.head
+            cur = self.vertices.head.next
+            while cur is not None:
+                if cur.value.label == label:
+                    prev.next = cur.next
+                    break
+                prev = cur
+                cur = cur.next
+
+    def deleteVertex(self, label):
+        if not self.hasVertex(label):
+            raise Exception("Vertex not found")
+        temp = self.vertices.head
+        while temp is not None:
+            if temp.value.label != label:
+                self.deleteEdge(temp.value.label, label)
+            temp = temp.next
+        if self.vertices.head.value.label == label:
+            self.vertices.remove_first()
+        else:
+            prev = self.vertices.head
+            cur = self.vertices.head.next
+            while cur is not None:
+                if cur.value.label == label:
+                    prev.next = cur.next
+                    break
+                prev = cur
+                cur = cur.next
+    def deleteEdge(self, label1, label2):
+        if not self.hasVertex(label1) or not self.hasVertex(label2):
+            raise Exception("Vertex not found")
+        # remove label2 from label1's links
+        vertex1 = self.getVertex(label1)
+        prev = None
+        temp = vertex1.links.head
+        while temp is not None:
+            if temp.value.label == label2:
+                if prev is None:
+                    vertex1.links.head = temp.next
+                else:
+                    prev.next = temp.next
+                break
+            prev = temp
+            temp = temp.next
+        # remove label1 from label2's links
+        vertex2 = self.getVertex(label2)
+        prev = None
+        temp = vertex2.links.head
+        while temp is not None:
+            if temp.value.label == label1:
+                if prev is None:
+                    vertex2.links.head = temp.next
+                else:
+                    prev.next = temp.next
+                break
+            prev = temp
+            temp = temp.next
+def menu():
+    g = DSAGraph()
+    option = 0
+
+    while option != 9:
+        print("\n=== Graph Menu ===")
+        print("1. Add vertex")
+        print("2. Delete vertex")
+        print("3. Add edge")
+        print("4. Delete edge")
+        print("5. Display as list")
+        print("6. Display as matrix")
+        print("7. Breadth First Search")
+        print("8. Depth First Search")
+        print("9. Quit")
+        
+        option = int(input("Enter option: "))
+        
+        if option == 1:
+            label = input("Enter vertex label: ")
+            g.addVertex(label)
+            print(f"Vertex {label} added!")
+            
+        elif option == 2:
+            label = input("Enter vertex label to delete: ")
+            g.deleteVertex(label)
+            print(f"Vertex {label} deleted!")
+            
+        elif option == 3:
+            label1 = input("Enter first vertex label: ")
+            label2 = input("Enter second vertex label: ")
+            g.addEdge(label1, label2)
+            print(f"Edge {label1}-{label2} added!")
+            
+        elif option == 4:
+            label1 = input("Enter first vertex label: ")
+            label2 = input("Enter second vertex label: ")
+            g.deleteEdge(label1, label2)
+            print(f"Edge {label1}-{label2} deleted!")
+            
+        elif option == 5:
+            g.displayAsList()
+            
+        elif option == 6:
+            g.displayAsMatrix()
+            
+        elif option == 7:
+            bfs = g.breadthFirstSearch()
+            print("BFS Order: ", end="")
+            temp = bfs.head
+            while temp is not None:
+                print(temp.value.label, end=" ")
+                temp = temp.next
+            print()
+            
+        elif option == 8:
+            dfs = g.depthFirstSearch()
+            print("DFS Order: ", end="")
+            temp = dfs.head
+            while temp is not None:
+                print(temp.value.label, end=" ")
+                temp = temp.next
+            print()
+            
+        elif option == 9:
+            print("Goodbye!")
+            
+        else:
+            print("Invalid option, try again!")
+
+menu()
