@@ -1,15 +1,20 @@
-# DSAHashTable.py
+# HashTable.py
 # Hash Table implementation with double-hashing, auto-resize, and file I/O.
 
-import math
+# CHECK WITH TEACHER:
+#   How would you do the modularization in this (i.e. Having the class HashTable in another file?)
+#   Test hardness in the case of the assessment (How in depth is it supposed to be and should it be called when wanted
+#                                                - OR run from start every time?)
+#   How does the exception handling class look (descriptions for different caught exceptions)
+
 import os
 import sys
 
 
 
-# DSAHashEntry
+# HashEntry
 
-class DSAHashEntry:
+class HashEntry:
     """
     Companion class that stores one slot in the hash array.
     0 = FREE | 1 = USED | 2 = PREVIOUSLY_USED – was occupied but has been removed, probing must continue past this slot
@@ -22,13 +27,13 @@ class DSAHashEntry:
     def __init__(self):
         self.key   = None
         self.value = None
-        self.state = DSAHashEntry.FREE
+        self.state = HashEntry.FREE
 
 
 
-# DSAHashTable
+# HashTable
 
-class DSAHashTable:
+class HashTable:
     """
        Polynomial rolling hash  hash1 for the PRIMARYt index.
        A second hash            hash2 for the STEP SIZE, double-hashing.
@@ -42,7 +47,7 @@ class DSAHashTable:
 
     def __init__(self, capacity=None):
         if capacity is None:
-            capacity = DSAHashTable.DEFAULT_CAPACITY
+            capacity = HashTable.DEFAULT_CAPACITY
         capacity = self._next_prime(capacity)
         self._capacity = capacity
         self._count    = 0
@@ -56,11 +61,11 @@ class DSAHashTable:
         * Triggers a grow-resize when load factor would exceed UPPER_LOAD.
         """
         idx = self._find(key)
-        if idx != -1 and self._array[idx].state == DSAHashEntry.USED:
+        if idx != -1 and self._array[idx].state == HashEntry.USED:
             self._array[idx].value = value   # update duplicate
             return
 
-        if (self._count + 1) / self._capacity >= DSAHashTable.UPPER_LOAD:
+        if (self._count + 1) / self._capacity >= HashTable.UPPER_LOAD:
             self._resize(self._capacity * 2)
 
         self._insert(key, value)
@@ -69,12 +74,12 @@ class DSAHashTable:
     def hasKey(self, key):
         """Return True if key is present in the table."""
         idx = self._find(key)
-        return idx != -1 and self._array[idx].state == DSAHashEntry.USED
+        return idx != -1 and self._array[idx].state == HashEntry.USED
 
     def get(self, key):
         """Return the value for key, or raise KeyError if absent."""
         idx = self._find(key)
-        if idx == -1 or self._array[idx].state != DSAHashEntry.USED:
+        if idx == -1 or self._array[idx].state != HashEntry.USED:
             raise KeyError(f"Key not found: {key}")
         return self._array[idx].value
 
@@ -83,16 +88,16 @@ class DSAHashTable:
         Mark the slot PREVIOUSLY_USED so probing chains remain intact, then shrink when the load factor drops below LOWER_LOAD.
         """
         idx = self._find(key)
-        if idx == -1 or self._array[idx].state != DSAHashEntry.USED:
+        if idx == -1 or self._array[idx].state != HashEntry.USED:
             raise KeyError(f"Key not found: {key}")
-        self._array[idx].state = DSAHashEntry.PREVIOUSLY_USED
+        self._array[idx].state = HashEntry.PREVIOUSLY_USED
         self._array[idx].key   = None
         self._array[idx].value = None
         self._count -= 1
 
         new_cap = self._capacity // 2
-        if (new_cap >= DSAHashTable.DEFAULT_CAPACITY and
-                self._count / self._capacity < DSAHashTable.LOWER_LOAD):
+        if (new_cap >= HashTable.DEFAULT_CAPACITY and
+                self._count / self._capacity < HashTable.LOWER_LOAD):
             self._resize(new_cap)
 
     def count(self):
@@ -112,13 +117,13 @@ class DSAHashTable:
         """Write every USED entry to filename as  key,value  lines."""
         with open(filename, 'w') as f:
             for i in range(self._capacity):
-                if self._array[i].state == DSAHashEntry.USED:
+                if self._array[i].state == HashEntry.USED:
                     f.write(f"{self._array[i].key},{self._array[i].value}\n")
 
     @classmethod
     def load_from_csv(cls, filename, capacity=None):
         """
-        Read key,value CSV and return a populated DSAHashTable.
+        Read key,value CSV and return a populated HashTable.
         Manual comma search (no split()) so the first comma separates key
         from value – value may itself contain commas (e.g. names).
         Duplicate keys are updated in-place.
@@ -174,7 +179,7 @@ class DSAHashTable:
     def _make_array(self, size):
         arr = [None] * size
         for i in range(size):
-            arr[i] = DSAHashEntry()
+            arr[i] = HashEntry()
         return arr
 
     def _find(self, key):
@@ -186,9 +191,9 @@ class DSAHashTable:
         idx = start
         for _ in range(self._capacity):
             entry = self._array[idx]
-            if entry.state == DSAHashEntry.FREE:
+            if entry.state == HashEntry.FREE:
                 return -1
-            if entry.state == DSAHashEntry.USED and entry.key == key:
+            if entry.state == HashEntry.USED and entry.key == key:
                 return idx
             idx = (idx + step) % self._capacity
         return -1
@@ -199,10 +204,10 @@ class DSAHashTable:
         idx = start
         for _ in range(self._capacity):
             entry = self._array[idx]
-            if entry.state != DSAHashEntry.USED:
+            if entry.state != HashEntry.USED:
                 entry.key   = key
                 entry.value = value
-                entry.state = DSAHashEntry.USED
+                entry.state = HashEntry.USED
                 return
             idx = (idx + step) % self._capacity
         raise RuntimeError("Hash table is full – cannot insert.")
@@ -213,7 +218,7 @@ class DSAHashTable:
         Time complexity: O(n) Stored entries are treached once.
         Space complexity: O(n) Array is freed after use, only one array at a time in use.\
         """
-        new_cap   = self._next_prime(max(hint, DSAHashTable.DEFAULT_CAPACITY))
+        new_cap   = self._next_prime(max(hint, HashTable.DEFAULT_CAPACITY))
         old_array = self._array
 
         self._capacity = new_cap
@@ -221,7 +226,7 @@ class DSAHashTable:
         self._array    = self._make_array(new_cap)
 
         for entry in old_array:
-            if entry.state == DSAHashEntry.USED:
+            if entry.state == HashEntry.USED:
                 self._insert(entry.key, entry.value)
                 self._count += 1
 
@@ -247,7 +252,7 @@ class DSAHashTable:
     @staticmethod
     def _next_prime(n):
         candidate = n if n % 2 != 0 else n + 1
-        while not DSAHashTable._is_prime(candidate):
+        while not HashTable._is_prime(candidate):
             candidate += 2
         return candidate
 
@@ -258,16 +263,16 @@ class DSAHashTable:
             return 2
         if candidate % 2 == 0:
             candidate -= 1
-        while candidate > 2 and not DSAHashTable._is_prime(candidate):
+        while candidate > 2 and not HashTable._is_prime(candidate):
             candidate -= 2
         return candidate
 
     def __str__(self):
-        lines = [f"DSAHashTable  capacity={self._capacity}  "
+        lines = [f"HashTable  capacity={self._capacity}  "
                  f"count={self._count}  load={self.load_factor():.3f}"]
         for i in range(self._capacity):
             e = self._array[i]
-            if e.state == DSAHashEntry.USED:
+            if e.state == HashEntry.USED:
                 lines.append(f"  [{i:>5}]  {e.key}  ->  {e.value}")
         return "\n".join(lines)
 
@@ -323,11 +328,11 @@ def _parse_args():
             i += 1
             if i >= len(args):
                 print("ERROR: -f requires a filename argument.")
-                print("Usage: python3 DSAHashTable.py -f <filename.csv>")
+                print("Usage: python3 HashTable.py -f <filename.csv>")
                 sys.exit(1)
             fname = _resolve_path(args[i])
         elif token in ("-h", "--help"):
-            print("Usage: python3 DSAHashTable.py [-f <filename.csv>]")
+            print("Usage: python3 HashTable.py [-f <filename.csv>]")
             print("  -f <filename>  CSV file (key,value per line) to load")
             print("                 Can be a bare filename, relative, or absolute path.")
             print("                 Bare filenames are looked up in the current directory")
@@ -336,7 +341,7 @@ def _parse_args():
             sys.exit(0)
         else:
             print(f"ERROR: Unknown argument '{token}'")
-            print("Usage: python3 DSAHashTable.py -f <filename.csv>")
+            print("Usage: python3 HashTable.py -f <filename.csv>")
             sys.exit(1)
         i += 1
     return fname
@@ -369,7 +374,7 @@ def _run_unit_tests():
 
     #### 1.  Basic put / get / hasKey
     sep("1. Basic operations (capacity=7)")
-    ht = DSAHashTable(7)
+    ht = HashTable(7)
     pairs = [("apple","fruit"),("carrot","vegetable"),("mango","fruit"),
              ("broccoli","vegetable"),("lemon","fruit")]
     for k, v in pairs:
@@ -390,7 +395,7 @@ def _run_unit_tests():
 
     #### 2.  Remove + probing correctness
     sep("2. Remove – probing chain stays intact")
-    small = DSAHashTable(7)
+    small = HashTable(7)
     small.put("Key1", "Val1")
     small.put("Key2", "Val2")
     small.put("Key3", "Val3")
@@ -402,7 +407,7 @@ def _run_unit_tests():
 
     #### 3.  Auto-resize grow
     sep("3. Auto-resize – grow (start cap=11)")
-    ht2 = DSAHashTable(11)
+    ht2 = HashTable(11)
     rnames = ["Alice","Bob","Carol","Dave","Eve","Frank","Gina","Hank","Ivy","Jade"]
     for name in rnames:
         old = ht2.capacity()
@@ -424,14 +429,14 @@ def _run_unit_tests():
 
     #### 5.  Save & reload small table
     sep("5. File I/O – save and reload small table")
-    save_ht = DSAHashTable(11)
+    save_ht = HashTable(11)
     io_pairs = [("001","Alpha"),("002","Beta"),("003","Gamma"),("004","Delta")]
     for k, v in io_pairs:
         save_ht.put(k, v)
     save_ht.save_to_csv("small_test_output.csv")
     print("  Saved small_test_output.csv")
 
-    loaded = DSAHashTable.load_from_csv("small_test_output.csv")
+    loaded = HashTable.load_from_csv("small_test_output.csv")
     print("  Reloaded and verified:")
     for k, v in io_pairs:
         result = loaded.get(k)
@@ -467,12 +472,12 @@ if __name__ == "__main__":
         print(f"ERROR: File not found: '{csv_path}'")
         sys.exit(1)
 
-    # Run internal unit tests first
+    # Run internal unit tests first | # # # # MAKE SURE TO CHECK IF NEEDED FOR ASSESSMNET # # # #
     _run_unit_tests()
 
     # Load the CSV, print stats, spot-check, save output
     sep(f"6. Loading '{csv_path}'")
-    big = DSAHashTable.load_from_csv(csv_path)
+    big = HashTable.load_from_csv(csv_path)
     print(f"  Loaded:  count={big.count()}  cap={big.capacity()}  load={big.load_factor():.3f}")
 
     # Spot-check the first few known keys from the sample/spec
