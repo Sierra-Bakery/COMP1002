@@ -5,6 +5,7 @@
 
 import math
 import os
+import sys
 
 
 # ---------------------------------------------------------------------------
@@ -320,6 +321,38 @@ def sep(title=""):
         print("=" * 60)
 
 
+def _resolve_path(filename):
+    """
+    Turn a bare filename (or any relative/absolute path) into an absolute path.
+
+    Resolution order:
+      1. If the path is already absolute, use it as-is.
+      2. Check the current working directory first.
+      3. If not found there, also check the directory that contains this
+         script – so the file can sit next to DSAHashTable.py regardless
+         of where the user invokes Python from.
+
+    Returns the resolved path string (the caller checks existence).
+    """
+    if os.path.isabs(filename):
+        return filename                         # already absolute
+
+    # Try CWD first (most intuitive when the user is in that folder)
+    cwd_path = os.path.join(os.getcwd(), filename)
+    if os.path.exists(cwd_path):
+        return cwd_path
+
+    # Fall back to the script's own directory
+    script_dir  = os.path.dirname(os.path.abspath(sys.argv[0]))
+    script_path = os.path.join(script_dir, filename)
+    if os.path.exists(script_path):
+        return script_path
+
+    # Neither location has the file – return the CWD version so the
+    # later existence check produces a clear "not found" error message.
+    return cwd_path
+
+
 def _parse_args():
     """
     Minimal argument parser (no argparse – manual argv scanning).
@@ -328,8 +361,16 @@ def _parse_args():
     ---------------
     -f <filename>   CSV file to load into the hash table
     -h / --help     Print usage and exit
+
+    The filename may be:
+      • a bare name       e.g.  RandomNames7000.csv
+      • a relative path   e.g.  data/names.csv
+      • an absolute path  e.g.  /home/user/data/names.csv
+
+    Bare names and relative paths are resolved against the current working
+    directory first, then against the script's own directory, so the file
+    works as long as it sits in either location.
     """
-    import sys
     args  = sys.argv[1:]          # skip script name
     fname = None
     i = 0
@@ -341,10 +382,13 @@ def _parse_args():
                 print("ERROR: -f requires a filename argument.")
                 print("Usage: python3 DSAHashTable.py -f <filename.csv>")
                 sys.exit(1)
-            fname = args[i]
+            fname = _resolve_path(args[i])
         elif token in ("-h", "--help"):
             print("Usage: python3 DSAHashTable.py [-f <filename.csv>]")
             print("  -f <filename>  CSV file (key,value per line) to load")
+            print("                 Can be a bare filename, relative, or absolute path.")
+            print("                 Bare filenames are looked up in the current directory")
+            print("                 and then in the script's own directory.")
             print("  -h / --help    Show this help message")
             sys.exit(0)
         else:
@@ -463,7 +507,6 @@ def _run_unit_tests():
 # =============================================================================
 
 if __name__ == "__main__":
-    import sys
 
     csv_path = _parse_args()        # may be None if -f was not supplied
 
