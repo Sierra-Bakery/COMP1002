@@ -112,7 +112,6 @@ class HashTable:
     
     # File I/O
     
-
     def save_to_csv(self, filename):
         """Write every USED entry to filename as  key,value  lines."""
         with open(filename, 'w') as f:
@@ -134,12 +133,9 @@ class HashTable:
                 line = raw_line.strip()
                 if not line:
                     continue
-                comma_pos = -1
-                for ci in range(len(line)):
-                    if line[ci] == ',':
-                        comma_pos = ci
-                        break
-                if comma_pos == -1:
+                try:
+                    comma_pos = line.index(',')
+                except ValueError:
                     continue
                 key   = line[:comma_pos]
                 value = line[comma_pos + 1:]
@@ -454,18 +450,24 @@ if __name__ == "__main__":
         print("  [1] Generate a random sample dataset and continue")
         print("  [2] Exit")
         print()
-        while True:
-            choice = input("Enter choice (1 or 2): ").strip()
-            if choice == "1":
-                csv_path = "sample_generated.csv"
-                _generate_sample_csv(csv_path)
-                print(f"\nSample data written to '{csv_path}'.")
-                break
-            elif choice == "2":
-                print("Exiting.")
-                sys.exit(0)
-            else:
-                print("  Please enter 1 or 2.")
+
+        def _choice_1():
+            global csv_path
+            csv_path = "sample_generated.csv"
+            _generate_sample_csv(csv_path)
+            print(f"\nSample data written to '{csv_path}'.")
+
+        def _choice_2():
+            print("Exiting.")
+            sys.exit(0)
+
+        choices = {"1": _choice_1, "2": _choice_2}
+
+        choice = next(
+            choices[c]()
+            for c in iter(lambda: input("Enter choice (1 or 2): ").strip(), None)
+            if c in choices or not print("  Please enter 1 or 2.")
+        )
 
     # File supplied (or just generated) → verify it exists
     if not os.path.exists(csv_path):
