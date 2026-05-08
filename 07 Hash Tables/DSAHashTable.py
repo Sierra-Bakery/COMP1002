@@ -9,6 +9,7 @@
 
 import os
 import sys
+import numpy
 
 
 
@@ -173,7 +174,7 @@ class HashTable:
     
 
     def _make_array(self, size):
-        arr = [None] * size
+        arr = numpy.empty(size, dtype=object)
         for i in range(size):
             arr[i] = HashEntry()
         return arr
@@ -275,14 +276,11 @@ class HashTable:
 
 
 # Helpers
-
-
 def sep(title=""):
     print("\n" + "=" * 60)
     if title:
         print(f"  {title}")
         print("=" * 60)
-
 
 def _resolve_path(filename):
     """GETS ABSLOUTE PATH FOR FILENAME and send it to the param"""
@@ -315,7 +313,7 @@ def _parse_args():
     path  "data/names.csv"
     absolute path  " /home/user/data/names.csv "
     """
-    args  = sys.argv[1:]          # skip script name
+    args  = sys.argv[1:]          # skip script name # # # CHECK IF THIS IS OKAY # # #
     fname = None
     i = 0
     while i < len(args):
@@ -345,7 +343,7 @@ def _parse_args():
 
 def _generate_sample_csv(path):
     """Write a built-in 22-entry sample CSV (includes 2 deliberate duplicates)."""
-    sample = [
+    sample = numpy.array([
         ("14495655","Sofia Bonfiglio"), ("14224671","Ashlee Capellan"),
         ("14707100","Dona Mcinnes"),    ("14644633","Maricela Landreneau"),
         ("14147356","Elinor Raco"),     ("14393910","Cody Mcmartin"),
@@ -358,7 +356,7 @@ def _generate_sample_csv(path):
         ("14999999","Isla Lee"),        ("14000001","Jack Scott"),
         # intentional duplicates!
         ("14495655","Sofia Bonfiglio"), ("14224671","Ashlee Capellan"),
-    ]
+    ])
     with open(path, 'w') as f:
         for k, v in sample:
             f.write(f"{k},{v}\n")
@@ -404,6 +402,7 @@ def _run_unit_tests():
     #### 3.  Auto-resize grow
     sep("3. Auto-resize – grow (start cap=11)")
     ht2 = HashTable(11)
+    rnames = numpy.empty(10, dtype=str)
     rnames = ["Alice","Bob","Carol","Dave","Eve","Frank","Gina","Hank","Ivy","Jade"]
     for name in rnames:
         old = ht2.capacity()
@@ -426,7 +425,7 @@ def _run_unit_tests():
     #### 5.  Save & reload small table
     sep("5. File I/O – save and reload small table")
     save_ht = HashTable(11)
-    io_pairs = [("001","Alpha"),("002","Beta"),("003","Gamma"),("004","Delta")]
+    io_pairs = numpy.array([("001","Alpha"),("002","Beta"),("003","Gamma"),("004","Delta")])
     for k, v in io_pairs:
         save_ht.put(k, v)
     save_ht.save_to_csv("small_test_output.csv")
@@ -483,9 +482,9 @@ if __name__ == "__main__":
     print(f"  Loaded:  count={big.count()}  cap={big.capacity()}  load={big.load_factor():.3f}")
 
     # Spot-check the first few known keys from the sample/spec
-    spot = [("14495655","Sofia Bonfiglio"),
+    spot = numpy.array([("14495655","Sofia Bonfiglio"),
             ("14224671","Ashlee Capellan"),
-            ("14707100","Dona Mcinnes")]
+            ("14707100","Dona Mcinnes")])
     print("  Spot checks:")
     for k, expected in spot:
         if big.hasKey(k):
