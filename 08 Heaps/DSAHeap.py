@@ -140,7 +140,7 @@ def main():
         print(heapArray[i].getpriority(), heapArray[i].getValue())
 
 # NOTE #
-# You need to be able to sort the heap then be able to att and remove/ edit values after.
+# You need to be able to sort the heap then be able to add and remove/ edit values after.
 # NOTE #
 
 main()
@@ -152,6 +152,7 @@ main()
 #heap.addEntry(90, "B")
 #heap.addEntry(20, "C")
 #heap.addEntry(100, "D")
+#heap.remove(100, "D")
 
 #heap.display()
 
